@@ -112,4 +112,4 @@ target_link_libraries(generate_april
  )
 
 # unit tests related
-add_subdirectory(tests)
+# add_subdirectory(tests)
