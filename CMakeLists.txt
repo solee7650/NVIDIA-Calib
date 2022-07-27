@@ -94,21 +94,21 @@ list(REMOVE_ITEM MC_CALIB_SRC ${PROJECT_SOURCE_DIR}/src/main_calibrate.cpp ${PRO
 add_executable(calibrate src/main_calibrate.cpp ${MC_CALIB_SRC})
 
 target_link_libraries(calibrate
- -L/usr/local/lib ${OpenCV_LIBS} ${CERES_LIBRARIES} Boost::log Boost::system Boost::filesystem 
+ -L/usr/local/lib ${OpenCV_LIBS} ${CERES_LIBRARIES} ${AprilTag_LIB} Boost::log Boost::system Boost::filesystem 
  )
 
 ##################Generate Charuco######################
 add_executable(generate_charuco src/main_create_charuco.cpp)
 
 target_link_libraries(generate_charuco
- -L/usr/local/lib ${OpenCV_LIBS} ${CERES_LIBRARIES} Boost::log Boost::system Boost::filesystem
+ -L/usr/local/lib ${OpenCV_LIBS} ${CERES_LIBRARIES} ${AprilTag_LIB} Boost::log Boost::system Boost::filesystem
  )
 
 ##################Generate Apriltag######################
 add_executable(generate_april src/main_create_april.cpp)
 
 target_link_libraries(generate_april
- -L/usr/local/lib ${OpenCV_LIBS} ${CERES_LIBRARIES} Boost::log Boost::system Boost::filesystem
+ -L/usr/local/lib ${OpenCV_LIBS} ${CERES_LIBRARIES} ${AprilTag_LIB} Boost::log Boost::system Boost::filesystem
  )
 
 # unit tests related

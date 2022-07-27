@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
   float length_square, length_marker;
   std::vector<int> number_x_square_per_board, number_y_square_per_board;
   std::vector<int> resolution_x_per_board, resolution_y_per_board;
+  std::vector<int> boards_idx;
   std::vector<double> square_size_per_board;
   cv::FileStorage fs; // FileStorage to read calibration params from file
   const bool is_file_available =
@@ -40,9 +41,10 @@ int main(int argc, char *argv[]) {
   fs["number_y_square_per_board"] >> number_y_square_per_board;
   fs["resolution_x_per_board"] >> resolution_x_per_board;
   fs["resolution_y_per_board"] >> resolution_y_per_board;
+  fs["boards_index"] >> boards_idx;
 
   fs.release(); // close the input file
-
+  NbBoard = boards_idx.size();
   // Check if multi-size boards are used or not
   if (square_size_per_board.size() == 0) {
     for (int i = 0; i < NbBoard; i++) {
@@ -53,38 +55,51 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  // Create the charuco
+  // Create the April
   cv::Ptr<cv::aruco::Dictionary> dict =
-      cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_1000);
-  std::vector<cv::Ptr<cv::aruco::CharucoBoard>> charucoBoards;
+      cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11);
+  std::vector<cv::Ptr<cv::aruco::GridBoard>> aprilBoards;
+ 
   int offset_count = 0;
   for (int i = 0; i < NbBoard; i++) {
     // declare the board
-    cv::Ptr<cv::aruco::CharucoBoard> charuco = cv::aruco::CharucoBoard::create(
+    std::vector<int> board_ids(number_x_square_per_board[i] * number_y_square_per_board[i]);
+    // std::cout << number_x_square_per_board[i] << number_y_square_per_board[i] << "\n";
+    for (auto &ids : board_ids) {
+    ids += 1;
+    }
+    board_ids[number_x_square_per_board[i] * number_y_square_per_board[i] / 2] = 0;
+   
+    cv::Ptr<cv::aruco::GridBoard> Board = cv::aruco::GridBoard::create(
         number_x_square_per_board[i], number_y_square_per_board[i],
         length_square, length_marker, dict);
     // If it is the first board then just use the standard idx
-    if (i != 0) {
-      int id_offset = charucoBoards[i - 1]->ids.size() + offset_count;
+      int id_offset = aprilBoards[i - 1]->ids.size() + offset_count;
       offset_count = id_offset;
-      for (auto &id : charuco->ids) {
-        id += id_offset;
+      Board->ids = board_ids;
+      if (boards_idx[i]) {
+      // std::cout<< boards_idx[i] <<"\n";
+      for (auto &id : Board->ids) {
+        id += boards_idx[i] * 2;
       }
-    }
-    // create the charuco board
-    charucoBoards.push_back(charuco);
+      }
+
+    // create the april board
+    aprilBoards.push_back(Board);
     cv::Mat boardImage;
-    charucoBoards[i]->draw(
+    aprilBoards[i]->draw(
         cv::Size(resolution_x_per_board[i], resolution_y_per_board[i]),
         boardImage, 10, 1);
+
     // Display marker
-    cv::imshow("My Charuco", boardImage);
-    cv::waitKey(1);
+    // cv::imshow("My April", boardImage);
+    // cv::waitKey(1);
+
     // Save the marker
     std::ostringstream ss;
     ss << std::setw(3) << std::setfill('0') << i;
     std::string s1 = ss.str();
-    std::string charname = "charuco_board_";
+    std::string charname = "april_board_";
     std::string extname = ".bmp";
     std::string savename = charname + s1;
     savename += extname;

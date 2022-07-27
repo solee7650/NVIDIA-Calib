@@ -304,6 +304,7 @@ calibrate: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.2.0
 calibrate: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.2.0
 calibrate: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.2.0
 calibrate: /usr/local/lib/libceres.a
+calibrate: /usr/local/lib/libapriltag.so
 calibrate: /usr/lib/x86_64-linux-gnu/libboost_log.a
 calibrate: /usr/lib/x86_64-linux-gnu/libboost_system.a
 calibrate: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a

@@ -109,6 +109,7 @@ generate_april: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.2.0
 generate_april: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.2.0
 generate_april: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.2.0
 generate_april: /usr/local/lib/libceres.a
+generate_april: /usr/local/lib/libapriltag.so
 generate_april: /usr/lib/x86_64-linux-gnu/libboost_log.a
 generate_april: /usr/lib/x86_64-linux-gnu/libboost_system.a
 generate_april: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a

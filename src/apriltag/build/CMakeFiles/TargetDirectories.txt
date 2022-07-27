@@ -1,0 +1,8 @@
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/install/strip.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/install/local.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/install.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/list_install_components.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/rebuild_cache.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/edit_cache.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/apriltag_demo.dir
+/home/solee/MC-Calib/apriltag/build/CMakeFiles/apriltag.dir
