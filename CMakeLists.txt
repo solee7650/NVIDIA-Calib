@@ -12,7 +12,7 @@ message(${OpenCV_INCLUDE_DIRS})
 
 find_package(Ceres REQUIRED)
 
-find_package(apriltag REQUIRED)
+# find_package(apriltag REQUIRED)
 
 FIND_PATH (AprilTag_INCLUDE_DIR
 	NAMES apriltag.h

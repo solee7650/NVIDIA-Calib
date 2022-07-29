@@ -18,7 +18,7 @@
 AprilTag_INCLUDE_DIR:PATH=/usr/local/include/apriltag
 
 //The AprilTag shared library
-AprilTag_LIB:FILEPATH=/usr/local/lib/libapriltag.so
+AprilTag_LIB:FILEPATH=/usr/local/lib/libapriltag.a
 
 //Path to a library.
 BLAS_atlas_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libatlas.so
@@ -363,9 +363,6 @@ SuiteSparse_SPQR_LIBRARY:FILEPATH=/usr/lib/x86_64-linux-gnu/libspqr.so
 
 //The directory containing a CMake configuration file for TBB.
 TBB_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/TBB
-
-//The directory containing a CMake configuration file for apriltag.
-apriltag_DIR:PATH=/usr/local/share/apriltag/cmake
 
 //The directory containing a CMake configuration file for boost_atomic.
 boost_atomic_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/boost_atomic-1.71.0

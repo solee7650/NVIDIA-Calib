@@ -109,7 +109,7 @@ generate_charuco: /usr/lib/x86_64-linux-gnu/libopencv_viz.so.4.2.0
 generate_charuco: /usr/lib/x86_64-linux-gnu/libopencv_xobjdetect.so.4.2.0
 generate_charuco: /usr/lib/x86_64-linux-gnu/libopencv_xphoto.so.4.2.0
 generate_charuco: /usr/local/lib/libceres.a
-generate_charuco: /usr/local/lib/libapriltag.so
+generate_charuco: /usr/local/lib/libapriltag.a
 generate_charuco: /usr/lib/x86_64-linux-gnu/libboost_log.a
 generate_charuco: /usr/lib/x86_64-linux-gnu/libboost_system.a
 generate_charuco: /usr/lib/x86_64-linux-gnu/libboost_filesystem.a

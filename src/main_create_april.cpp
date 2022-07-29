@@ -74,8 +74,8 @@ int main(int argc, char *argv[]) {
         number_x_square_per_board[i], number_y_square_per_board[i],
         length_square, length_marker, dict);
     // If it is the first board then just use the standard idx
-      int id_offset = aprilBoards[i - 1]->ids.size() + offset_count;
-      offset_count = id_offset;
+      // int id_offset = aprilBoards[i - 1]->ids.size() + offset_count;
+      // offset_count = id_offset;
       Board->ids = board_ids;
       if (boards_idx[i]) {
       // std::cout<< boards_idx[i] <<"\n";

@@ -18,7 +18,8 @@ Calibration::Calibration(const std::string config_path) {
   cv::FileStorage fs; // cv::FileStorage to read calibration params from file
   int distortion_model;
   std::vector<int> distortion_per_camera;
-  std::vector<int> boards_index;
+  // std::vector<int> board_kind_per_board;
+  int board_kind;
   int nb_x_square, nb_y_square;
   float length_square, length_marker;
   const bool is_file_available =
@@ -53,6 +54,8 @@ Calibration::Calibration(const std::string config_path) {
   fs["number_y_square_per_board"] >> number_y_square_per_board_;
   fs["resolution_x_per_board"] >> resolution_x_per_board_;
   fs["resolution_y_per_board"] >> resolution_y_per_board_;
+  fs["board_kind"] >> board_kind;
+  fs["board_kind_per_board"] >> board_kind_per_board;
   fs["he_approach"] >> he_approach_;
   fs["fix_intrinsic"] >> fix_intrinsic_;
 
@@ -97,12 +100,27 @@ Calibration::Calibration(const std::string config_path) {
     boards_index.resize(nb_board_);
     std::iota(boards_index.begin(), boards_index.end(), 0);
   }
+
+  if (board_kind_per_board.size() == 0) {
+    board_kind_per_board.assign(nb_board_, board_kind);
+  }
+  // std::cout<< board_kind_per_board << std::endl;
+
   std::map<int, cv::Ptr<cv::aruco::CharucoBoard>> charuco_boards;
+  std::map<int, cv::Ptr<cv::aruco::GridBoard>> april_boards;
+  // std::cout<< "hello" << std::endl;
+ 
   int offset_count = 0;
-  for (int i = 0; i <= max_board_idx; i++) {
+  for (int i = 0; i < nb_board_; i++) {
+    // std::cout<< board_kind_per_board[i] << std::endl;
+    // std::cout<< i << std::endl;
+
+    if (board_kind_per_board[i] == 0){
+
+
     cv::Ptr<cv::aruco::CharucoBoard> charuco = cv::aruco::CharucoBoard::create(
         number_x_square_per_board_[i], number_y_square_per_board_[i],
-        length_square, length_marker, dict_);
+        length_square, length_marker, dictcharuco_);
     if (i != 0) // If it is the first board then just use the standard idx
     {
       int id_offset = charuco_boards[i - 1]->ids.size() + offset_count;
@@ -111,23 +129,69 @@ Calibration::Calibration(const std::string config_path) {
         id += id_offset;
     }
     charuco_boards[i] = charuco;
+    }
+    else if (board_kind_per_board[i] == 1){
+    std::vector<int> board_ids(number_x_square_per_board_[i] * number_y_square_per_board_[i]);
+    for (auto &ids : board_ids) {
+    ids += 1;
+    }
+    board_ids[number_x_square_per_board_[i] * number_y_square_per_board_[i] / 2] = 0;
+
+    cv::Ptr<cv::aruco::GridBoard> april = cv::aruco::GridBoard::create(
+        number_x_square_per_board_[i], number_y_square_per_board_[i],
+        length_square, length_marker, dictapril_);
+    
+    april->ids = board_ids;
+
+    if (boards_index[i]) // If it is the first board then just use the standard idx
+    {
+      // int id_offset = april_boards[i - 1]->ids.size() + offset_count;
+      // offset_count = id_offset;
+      for (auto &id : april->ids) {
+        id += boards_index[i] * 2;
+        // std::cout<< id << std::endl;
+      }
+    }
+    april_boards[i] = april;
+    }
   }
+
+  // std::cout<< "hello" << std::endl;
 
   // Initialize the 3D boards
   for (int i = 0; i < nb_board_; i++) {
     // Initialize board
     std::shared_ptr<Board> new_board = std::make_shared<Board>(config_path, i);
+    if (board_kind_per_board[i] == 0){
     boards_3d_[i] = new_board;
     boards_3d_[i]->nb_pts_ =
         (boards_3d_[i]->nb_x_square_ - 1) * (boards_3d_[i]->nb_y_square_ - 1);
-    boards_3d_[i]->charuco_board_ = charuco_boards[boards_index[i]];
+    boards_3d_[i]->charuco_board_ = charuco_boards[i];
     boards_3d_[i]->pts_3d_.reserve(boards_3d_[i]->nb_pts_);
     // Prepare the 3D pts of the boards
     for (int y = 0; y < boards_3d_[i]->nb_y_square_ - 1; y++) {
+      // 수정 필요!!
       for (int x = 0; x < boards_3d_[i]->nb_x_square_ - 1; x++) {
         boards_3d_[i]->pts_3d_.emplace_back(x * boards_3d_[i]->square_size_,
                                             y * boards_3d_[i]->square_size_, 0);
       }
+    }
+    }
+    else if (board_kind_per_board[i] == 1){
+    boards_3d_[i] = new_board;
+    boards_3d_[i]->nb_pts_ =
+        (boards_3d_[i]->nb_x_square_ ) * (boards_3d_[i]->nb_y_square_ );
+    boards_3d_[i]->april_board_ = april_boards[i];
+    boards_3d_[i]->pts_3d_.reserve(boards_3d_[i]->nb_pts_);
+    
+    // Prepare the 3D pts of the boards
+    for (int y = 0; y < boards_3d_[i]->nb_y_square_ ; y++) {
+      // 수정 필요!!
+      for (int x = 0; x < boards_3d_[i]->nb_x_square_ ; x++) {
+        boards_3d_[i]->pts_3d_.emplace_back(x * boards_3d_[i]->square_size_,
+                                            y * boards_3d_[i]->square_size_, 0);
+      }
+    }
     }
   }
 }
@@ -137,7 +201,7 @@ Calibration::Calibration(const std::string config_path) {
  *
  */
 void Calibration::boardExtraction() {
-  std::unordered_set<cv::String> allowed_exts = {"jpg",  "png", "bmp",
+  std::unordered_set<cv::String> allowed_exts = {"jpg", "JPG", "png", "bmp",
                                                  "jpeg", "jp2", "tiff"};
 
   // iterate through the cameras
@@ -146,7 +210,9 @@ void Calibration::boardExtraction() {
     std::stringstream ss;
     ss << std::setw(3) << std::setfill('0') << cam + 1;
     std::string cam_nb = ss.str();
-    std::string cam_path = root_dir_ + cam_prefix_ + cam_nb;
+    // std::string cam_path = root_dir_ + cam_prefix_ + cam_nb;
+    std::string cam_path = root_dir_ + cam_prefix_;
+
     LOG_INFO << "Extraction camera " << cam_nb;
 
     // iterate through the images for corner extraction
@@ -172,11 +238,18 @@ void Calibration::boardExtraction() {
       std::string frame_path = fn[frameind];
       // detect the checkerboard on this image
       LOG_DEBUG << "Frame index :: " << frameind;
+      // std::cout<< frameind << std::endl;
+      // std::cout<< frame_path << std::endl;
+
+
       detectBoards(currentIm, cam, frameind, frame_path);
       LOG_DEBUG << frameind;
+
       // displayBoards(currentIm, cam, frameind); // Display frame
+      
     }
   }
+      std::cout<< "hello" << std::endl;
 }
 
 /**
@@ -207,10 +280,16 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
       charuco_corners; // key == board id, value == 2d points on checkerboard
   std::map<int, std::vector<int>>
       charuco_idx; // key == board id, value == ID corners on checkerboard
+  std::map<int, std::vector<cv::Point2f>>
+      april_corners; // key == board id, value == 2d points on checkerboard
+  std::map<int, std::vector<int>>
+      april_idx; // key == board id, value == ID corners on checkerboard
 
   charuco_params_->adaptiveThreshConstant = 1;
 
   for (int i = 0; i < nb_board_; i++) {
+    // std::cout<< boards_3d_[i]->april_board_->dictionary << std::endl;
+    if (board_kind_per_board[i] == 0){
     cv::aruco::detectMarkers(image, boards_3d_[i]->charuco_board_->dictionary,
                              marker_corners[i], marker_idx[i],
                              charuco_params_); // detect markers
@@ -237,8 +316,9 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
           charuco_corners[i][j].y = refined[j].y;
         }
       }
-
-      // Check for colinnerarity
+    }
+    
+    // Check for colinnerarity
       std::vector<cv::Point2f> pts_on_board_2d;
       pts_on_board_2d.reserve(charuco_idx[i].size());
       for (const auto &charuco_idx_at_board_id : charuco_idx[i]) {
@@ -255,13 +335,117 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
       if ((residual > boards_3d_[i]->square_size_ * 0.1) &
           (charuco_corners[i].size() > 4)) {
         int board_idx = i;
-        insertNewBoard(cam_idx, frame_idx, board_idx,
-                       charuco_corners[board_idx], charuco_idx[board_idx],
+        insertNewBoard(cam_idx, frame_idx, i,
+                       charuco_corners[i], charuco_idx[i],
                        frame_path);
-      }
     }
+    }
+    else if (board_kind_per_board[i] == 1){
+    cv::aruco::detectMarkers(image, boards_3d_[i]->april_board_->dictionary,
+                             marker_corners[i], marker_idx[i],
+                             charuco_params_); // detect markers
+    std::cout << marker_corners[i].size() << "\n";
+    std::cout << marker_idx[i][0] << "\n";
+    if (marker_corners[i].size() > 0) {
+      // april_corners[i]=marker_corners[i][0];
+
+      // for ()
+      for (int j = 0; j < marker_corners[i].size(); j++ ){
+        std::vector<cv::Point2f> pts1(4), pts2(4);
+        // std::vector<cv::Point3f> hpts1(4), hpts2(4);
+        cv::Mat hpt1, hpt2;
+
+        pts2 = {{0,0}, {0,1}, {1,0}, {1,1}};
+        if (marker_idx[i][j] == 2 * boards_index[i]){
+          for (int k = 0; k < 4; k++)
+          pts1[k] =marker_corners[i][j][k];
+          // pts1[k].emplace_back(marker_corners[i][j][k]);
+        cv::Mat H = cv::findHomography(pts2, pts1);
+        for (int k = 0; k < 4; k++) {
+        // hpts2[k].z = H.at<int>(Point(2, 0)) * pts1[k].x + H.at<int>(Point(2, 1)) * pts1[k].y + H.at<int>(Point(2, 2));
+        // hpts2[k].x = (H.at<int>(Point(0, 0)) * pts1[k].x + H.at<int>(Point(0, 1)) * pts1[k].y + H.at<int>(Point(0, 2)) * pts1[k].z)/ hpts1[k].z;
+        // hpts2[k].y = H.at<int>(Point(1, 0)) * pts1[k].x + H.at<int>(Point(1, 1)) * pts1[k].y + H.at<int>(Point(1, 2)) * pts1[k].z/ hpts1[k].z;
+        // hpts2[k].z = 1;
+        // hpts1[k].x = pts1[k].x;
+        // hpts1[k].y = pts1[k].y;
+        // hpts1[k].z = 1;
+        hpt2 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
+        hpt2.at<float>(0,0) = pts1[k].x;
+        hpt2.at<float>(1,0) = pts1[k].y;
+        // hpt2.at<float>(1,0) = pts1[k].x
+
+
+
+        std::cout<< H << "  " << hpt2 <<std::endl;
+        // hpt1 = 
+        // hpts2[k] = H.dot(cv::InputArray(hpts1[k]));
+        hpt1 = H * hpt2.t();
+
+        std::cout << hpt1 << std::endl;
+
+        }
+        }
+        
+        if (marker_idx[i][j] == 2 * boards_index[i]  ||  marker_idx[i][j] == 2 * boards_index[i] +1) {
+      april_corners[i].push_back((marker_corners[i][j][0]));
+      april_idx[i].push_back(marker_idx[i][j]);
+        }
+    }
+    std::cout<< april_corners[i].size()  << std::endl;
+    // std::cout<< (int)round(boards_3d_[i]->nb_pts_)  << std::endl;
+
+    }
+    if (april_corners[i].size() ==
+        (int)round(boards_3d_[i]->nb_pts_)) {
+      LOG_INFO << "Number of detected corners :: " << april_corners[i].size();
+      // Refine the detected corners
+      // if (refine_corner_ == true) {
+      //   std::vector<SaddlePoint> refined;
+      //   saddleSubpixelRefinement(graymat, april_corners[i], refined,
+      //                            corner_ref_window_, corner_ref_max_iter_);
+      //   for (int j = 0; j < april_corners[i].size(); j++) {
+      //     if (std::isinf(refined[j].x) || std::isinf(refined[j].y)) {
+      //       break;
+      //     }
+      //     april_corners[i][j].x = refined[j].x;
+      //     april_corners[i][j].y = refined[j].y;
+        // }
+      
+
+      // Check for colinnerarity
+      std::vector<cv::Point2f> pts_on_board_2d;
+      pts_on_board_2d.reserve(april_idx[i].size());
+      for (const auto &charuco_idx_at_board_id : april_idx[i]) {
+        pts_on_board_2d.emplace_back(
+            boards_3d_[i]->pts_3d_[i].x,
+            boards_3d_[i]->pts_3d_[i].y);
+      }
+      double dum_a, dum_b, dum_c;
+      double residual;
+      calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
+
+      // Add the board to the datastructures (if it passes the collinearity
+      // check)
+      // if ((residual > boards_3d_[i]->square_size_ * 0.1) &
+      //     (april_corners[i].size() > 4)) {
+      if (april_corners[i].size() > 4) {
+        std::cout << "True" << std::endl;
+        // int board_idx = i;
+        insertNewBoard(cam_idx, frame_idx, i,
+                       april_corners[i], april_idx[i],
+                       frame_path);
+          }
+        }  
+      }
+//       for(auto &it : marker_corners[i])
+// {
+//     // std::cout << it << "\n";
+// }
+    }
+    
   }
-}
+  
+
 
 /**
  * @brief Save all cameras parameters
@@ -506,9 +690,12 @@ void Calibration::initializeCalibrationAllCam() {
 
   } else {
     LOG_INFO << "Initializing camera calibration using images";
+    std::cout<< cams_.size() << std::endl;
+    for (const auto &it : cams_) {
+      // std::cout<< it.first << std::endl;
 
-    for (const auto &it : cams_)
       it.second->initializeCalibration();
+  }
   }
 }
 
