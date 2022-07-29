@@ -355,33 +355,23 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
         // std::vector<cv::Point3f> hpts1(4), hpts2(4);
         cv::Mat hpt1, hpt2;
 
-        pts2 = {{0,0}, {0,1}, {1,0}, {1,1}};
+        pts2 = {{1,1}, {0,1}, {0,0}, {1,0}};
         if (marker_idx[i][j] == 2 * boards_index[i]){
           for (int k = 0; k < 4; k++)
           pts1[k] =marker_corners[i][j][k];
           // pts1[k].emplace_back(marker_corners[i][j][k]);
-        cv::Mat H = cv::findHomography(pts2, pts1);
+        cv::Mat H = cv::findHomography(pts1, pts2);
         for (int k = 0; k < 4; k++) {
-        // hpts2[k].z = H.at<int>(Point(2, 0)) * pts1[k].x + H.at<int>(Point(2, 1)) * pts1[k].y + H.at<int>(Point(2, 2));
-        // hpts2[k].x = (H.at<int>(Point(0, 0)) * pts1[k].x + H.at<int>(Point(0, 1)) * pts1[k].y + H.at<int>(Point(0, 2)) * pts1[k].z)/ hpts1[k].z;
-        // hpts2[k].y = H.at<int>(Point(1, 0)) * pts1[k].x + H.at<int>(Point(1, 1)) * pts1[k].y + H.at<int>(Point(1, 2)) * pts1[k].z/ hpts1[k].z;
-        // hpts2[k].z = 1;
-        // hpts1[k].x = pts1[k].x;
-        // hpts1[k].y = pts1[k].y;
-        // hpts1[k].z = 1;
-        hpt2 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
-        hpt2.at<float>(0,0) = pts1[k].x;
-        hpt2.at<float>(1,0) = pts1[k].y;
-        // hpt2.at<float>(1,0) = pts1[k].x
+        H.convertTo(H,CV_32FC1);
+        hpt1 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
+        hpt1.at<float>(0,0) = pts1[k].x;
+        hpt1.at<float>(1,0) = pts1[k].y;
 
+        hpt2 = H * hpt1;
+        hpt2.at<float>(0,0) = hpt2.at<float>(0,0) / hpt2.at<float>(2,0);
+        hpt2.at<float>(1,0) = hpt2.at<float>(1,0) / hpt2.at<float>(2,0);
 
-
-        std::cout<< H << "  " << hpt2 <<std::endl;
-        // hpt1 = 
-        // hpts2[k] = H.dot(cv::InputArray(hpts1[k]));
-        hpt1 = H * hpt2.t();
-
-        std::cout << hpt1 << std::endl;
+        // std::cout << hpt2 << std::endl;
 
         }
         }

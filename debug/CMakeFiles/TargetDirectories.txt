@@ -1,0 +1,5 @@
+/home/solee/MC-Calib/MA-Calibcpp/debug/CMakeFiles/rebuild_cache.dir
+/home/solee/MC-Calib/MA-Calibcpp/debug/CMakeFiles/edit_cache.dir
+/home/solee/MC-Calib/MA-Calibcpp/debug/CMakeFiles/generate_april.dir
+/home/solee/MC-Calib/MA-Calibcpp/debug/CMakeFiles/generate_charuco.dir
+/home/solee/MC-Calib/MA-Calibcpp/debug/CMakeFiles/calibrate.dir
