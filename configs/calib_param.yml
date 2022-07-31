@@ -25,7 +25,7 @@ board_kind_per_board: []
 distortion_model: 0 #0:Brown (perspective) // 1: Kannala (fisheye)
 distortion_per_camera : [] #specify the model per camera, 
 #leave "distortion_per_camera" empty [] if they all follow the same model (make sure that the vector is as long as cameras nb)
-number_camera: 1  # number of cameras in the rig to calibrate
+number_camera: 3  # number of cameras in the rig to calibrate
 refine_corner: 1  # activate or deactivate the corner refinement
 min_perc_pts: 0.5  # min percentage of points visible to assume a good detection
 
@@ -34,7 +34,7 @@ fix_intrinsic: 0 #if 1 then the intrinsic parameters will not be estimated nor r
 
 ######################################## Images Parameters ###################################################
 root_path: "../../Data/UNISTcalibration/" #"../../Images_Sim1Cam3Board/" # "../../Images_NonOver3/"  "../../Images_Cube/" "../../Images_Plan/" "../../Images_NonOver6Cam/"
-cam_prefix: "external"
+cam_prefix: "Cam_"
 
 ######################################## Optimization Parameters ###################################################
 ransac_threshold: 3 #RANSAC threshold in pixel (keep it high just to remove strong outliers)

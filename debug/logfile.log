@@ -1,0 +1,137 @@
+0000001 | 2022-07-30, 08:04:11.816729 [info] - Nb of cameras : 1   Nb of Boards : 8   Refined Corners : true   Distortion mode : 0
+0000002 | 2022-07-30, 08:04:11.818193 [info] - Extraction camera 001
+0000004 | 2022-07-30, 08:04:11.983477 [info] - Number of detected corners :: 35
+0000005 | 2022-07-30, 08:04:12.129153 [info] - Number of detected corners :: 35
+0000008 | 2022-07-30, 08:04:12.521083 [info] - Number of detected corners :: 35
+0000009 | 2022-07-30, 08:04:12.762145 [info] - Number of detected corners :: 35
+0000012 | 2022-07-30, 08:04:13.126605 [info] - Number of detected corners :: 35
+0000013 | 2022-07-30, 08:04:13.247007 [info] - Number of detected corners :: 35
+0000016 | 2022-07-30, 08:04:13.610806 [info] - Number of detected corners :: 35
+0000017 | 2022-07-30, 08:04:13.734604 [info] - Number of detected corners :: 35
+0000020 | 2022-07-30, 08:04:14.220305 [info] - Number of detected corners :: 35
+0000023 | 2022-07-30, 08:04:14.613719 [info] - Number of detected corners :: 35
+0000026 | 2022-07-30, 08:04:15.008607 [info] - Number of detected corners :: 35
+0000027 | 2022-07-30, 08:04:15.137403 [info] - Number of detected corners :: 35
+0000030 | 2022-07-30, 08:04:15.472817 [info] - Number of detected corners :: 35
+0000031 | 2022-07-30, 08:04:15.879194 [info] - Number of detected corners :: 35
+0000034 | 2022-07-30, 08:04:16.019806 [info] - Number of detected corners :: 35
+0000035 | 2022-07-30, 08:04:16.405730 [info] - Number of detected corners :: 35
+0000038 | 2022-07-30, 08:04:16.547022 [info] - Number of detected corners :: 35
+0000039 | 2022-07-30, 08:04:16.801528 [info] - Number of detected corners :: 35
+0000042 | 2022-07-30, 08:04:17.329104 [info] - Number of detected corners :: 35
+0000045 | 2022-07-30, 08:04:17.603477 [info] - Number of detected corners :: 35
+0000046 | 2022-07-30, 08:04:18.014013 [info] - Number of detected corners :: 35
+0000049 | 2022-07-30, 08:04:18.415548 [info] - Number of detected corners :: 35
+0000050 | 2022-07-30, 08:04:18.552245 [info] - Number of detected corners :: 35
+0000053 | 2022-07-30, 08:04:19.072996 [info] - Number of detected corners :: 35
+0000056 | 2022-07-30, 08:04:19.481042 [info] - Number of detected corners :: 35
+0000059 | 2022-07-30, 08:04:19.767121 [info] - Number of detected corners :: 35
+0000060 | 2022-07-30, 08:04:20.044210 [info] - Number of detected corners :: 35
+0000063 | 2022-07-30, 08:04:20.461713 [info] - Number of detected corners :: 35
+0000064 | 2022-07-30, 08:04:20.593907 [info] - Number of detected corners :: 35
+0000067 | 2022-07-30, 08:04:21.018144 [info] - Number of detected corners :: 35
+0000068 | 2022-07-30, 08:04:21.234694 [info] - Number of detected corners :: 35
+0000071 | 2022-07-30, 08:04:21.616836 [info] - Number of detected corners :: 35
+0000072 | 2022-07-30, 08:04:21.771102 [info] - Number of detected corners :: 35
+0000075 | 2022-07-30, 08:04:22.356624 [info] - Number of detected corners :: 35
+0000078 | 2022-07-30, 08:04:22.787902 [info] - Number of detected corners :: 35
+0000081 | 2022-07-30, 08:04:23.351657 [info] - Number of detected corners :: 35
+0000082 | 2022-07-30, 08:04:23.490911 [info] - Number of detected corners :: 35
+0000085 | 2022-07-30, 08:04:23.783654 [info] - Number of detected corners :: 35
+0000086 | 2022-07-30, 08:04:24.072110 [info] - Number of detected corners :: 35
+0000089 | 2022-07-30, 08:04:24.714155 [info] - Number of detected corners :: 35
+0000092 | 2022-07-30, 08:04:25.083241 [info] - Number of detected corners :: 35
+0000093 | 2022-07-30, 08:04:25.309272 [info] - Number of detected corners :: 35
+0000096 | 2022-07-30, 08:04:25.859826 [info] - Number of detected corners :: 35
+0000099 | 2022-07-30, 08:04:26.230993 [info] - Number of detected corners :: 35
+0000100 | 2022-07-30, 08:04:26.453731 [info] - Number of detected corners :: 35
+0000103 | 2022-07-30, 08:04:26.754162 [info] - Number of detected corners :: 35
+0000104 | 2022-07-30, 08:04:26.888194 [info] - Number of detected corners :: 35
+0000105 | 2022-07-30, 08:04:27.024135 [info] - Number of detected corners :: 35
+0000108 | 2022-07-30, 08:04:27.316712 [info] - Number of detected corners :: 35
+0000109 | 2022-07-30, 08:04:27.452051 [info] - Number of detected corners :: 35
+0000112 | 2022-07-30, 08:04:28.008511 [info] - Number of detected corners :: 35
+0000115 | 2022-07-30, 08:04:28.727669 [info] - Number of detected corners :: 35
+0000118 | 2022-07-30, 08:04:29.300316 [info] - Number of detected corners :: 35
+0000121 | 2022-07-30, 08:04:29.583064 [info] - Number of detected corners :: 35
+0000122 | 2022-07-30, 08:04:29.714167 [info] - Number of detected corners :: 35
+0000125 | 2022-07-30, 08:04:30.250036 [info] - Number of detected corners :: 35
+0000128 | 2022-07-30, 08:04:30.668818 [info] - Number of detected corners :: 35
+0000129 | 2022-07-30, 08:04:30.936613 [info] - Number of detected corners :: 35
+0000132 | 2022-07-30, 08:04:31.311650 [info] - Number of detected corners :: 35
+0000133 | 2022-07-30, 08:04:31.545784 [info] - Number of detected corners :: 35
+0000136 | 2022-07-30, 08:04:31.770008 [info] - Number of detected corners :: 35
+0000137 | 2022-07-30, 08:04:32.060968 [info] - Number of detected corners :: 35
+0000140 | 2022-07-30, 08:04:32.666655 [info] - Number of detected corners :: 35
+0000143 | 2022-07-30, 08:04:33.311573 [info] - Number of detected corners :: 35
+0000146 | 2022-07-30, 08:04:33.639444 [info] - Number of detected corners :: 35
+0000147 | 2022-07-30, 08:04:33.917851 [info] - Number of detected corners :: 35
+0000148 | 2022-07-30, 08:04:34.053782 [info] - Number of detected corners :: 35
+0000151 | 2022-07-30, 08:04:34.407542 [info] - Number of detected corners :: 35
+0000152 | 2022-07-30, 08:04:34.540118 [info] - Number of detected corners :: 35
+0000155 | 2022-07-30, 08:04:35.181823 [info] - Number of detected corners :: 35
+0000158 | 2022-07-30, 08:04:35.503660 [info] - Number of detected corners :: 35
+0000159 | 2022-07-30, 08:04:35.800723 [info] - Number of detected corners :: 35
+0000162 | 2022-07-30, 08:04:36.030741 [info] - Number of detected corners :: 35
+0000165 | 2022-07-30, 08:04:36.580945 [info] - Number of detected corners :: 35
+0000168 | 2022-07-30, 08:04:37.202174 [info] - Number of detected corners :: 35
+0000171 | 2022-07-30, 08:04:37.738380 [info] - Number of detected corners :: 35
+0000174 | 2022-07-30, 08:04:38.623953 [info] - Number of detected corners :: 35
+0000175 | 2022-07-30, 08:04:38.686682 [info] - Number of detected corners :: 35
+0000177 | 2022-07-30, 08:04:38.687121 [info] - Board extraction done!
+0000178 | 2022-07-30, 08:04:38.687144 [info] - Intrinsic calibration initiated
+0000179 | 2022-07-30, 08:04:38.687155 [info] - Initializing camera calibration using images
+0000180 | 2022-07-30, 08:04:38.687165 [info] - NB of board available in this camera :: 78
+0000181 | 2022-07-30, 08:04:38.687177 [info] - NB of frames where this camera saw a board :: 48
+0000182 | 2022-07-30, 08:04:54.178260 [info] - cameraMatrix : [1169.796644596046, 0, 832.5927164712332;
+ 0, 1183.062973849772, 720.9384230624971;
+ 0, 0, 1]
+0000183 | 2022-07-30, 08:04:54.189660 [info] - distCoeffs : [-0.06738111335127329, -0.006647549391353248, 0.02190401072044255, 0.0008798001385565945, 0.0210318316625574]
+0000418 | 2022-07-30, 08:04:54.237744 [info] - Parameters before optimization :: [1169.796644596046, 0, 832.5927164712332;
+ 0, 1183.062973849772, 720.9384230624971;
+ 0, 0, 1]
+0000419 | 2022-07-30, 08:04:54.237816 [info] - distortion vector :: [-0.06738111335127329, -0.006647549391353248, 0.02190401072044255, 0.0008798001385565945, 0.0210318316625574]
+0000420 | 2022-07-30, 08:04:54.871865 [info] - Parameters after optimization :: [1283.318449869483, 0, 809.1733762655144;
+ 0, 1284.268911787704, 541.4684492107674;
+ 0, 0, 1]
+0000421 | 2022-07-30, 08:04:54.871920 [info] - distortion vector after optimization :: [-0.01521620256487752, -0.0141291499894995, -0.0001183743865928395, -0.0006592785990341904, 0.04855504519177576]
+0000422 | 2022-07-30, 08:04:54.875355 [info] - Intrinsic Calibration done!
+0000423 | 2022-07-30, 08:04:54.875371 [info] - 3D Object calibration initiated
+0000709 | 2022-07-30, 08:04:54.892790 [info] - Mean Error 0.494999
+0000758 | 2022-07-30, 08:04:55.275432 [info] - Mean Error 0.446682
+0000759 | 2022-07-30, 08:04:55.275514 [info] - 3D Object calibration done!
+0000760 | 2022-07-30, 08:04:55.275521 [info] - Camera group calibration initiated
+0000764 | 2022-07-30, 08:04:55.276934 [info] - Number of frames for camera group optimization  :: 48
+0000765 | 2022-07-30, 08:04:55.338879 [info] - Camera  0  :: [1, 0, 0, 0;
+ 0, 1, 0, 0;
+ 0, 0, 1, 0;
+ 0, 0, 0, 1]
+0000766 | 2022-07-30, 08:04:55.341229 [info] - Camera group calibration done!
+0001104 | 2022-07-30, 08:04:55.376232 [info] - Number of frames for camera group optimization  :: 48
+0001105 | 2022-07-30, 08:04:55.597632 [info] - Camera  0  :: [1, 0, 0, 0;
+ 0, 1, 0, 0;
+ 0, 0, 1, 0;
+ 0, 0, 0, 1]
+0001154 | 2022-07-30, 08:04:55.601249 [info] - Non-overlapping calibration initiated
+0001155 | 2022-07-30, 08:04:55.601273 [info] - Non-overlapping calibration done!
+0001156 | 2022-07-30, 08:04:55.601280 [info] - Merge cameras and objets initiated
+0001494 | 2022-07-30, 08:04:55.634739 [info] - Number of frames for camera group optimization  :: 48
+0001495 | 2022-07-30, 08:04:55.856656 [info] - Camera  0  :: [1, 0, 0, 0;
+ 0, 1, 0, 0;
+ 0, 0, 1, 0;
+ 0, 0, 0, 1]
+0001688 | 2022-07-30, 08:04:55.875205 [info] - Merge cameras and objets done!
+0001689 | 2022-07-30, 08:04:55.875245 [info] - Final refinement initiated
+0001690 | 2022-07-30, 08:04:55.875254 [info] - Number of frames for camera group optimization  :: 48
+0001691 | 2022-07-30, 08:04:56.094198 [info] - Camera  0  :: [1, 0, 0, 0;
+ 0, 1, 0, 0;
+ 0, 0, 1, 0;
+ 0, 0, 0, 1]
+0001692 | 2022-07-30, 08:04:56.096543 [info] - Number of frames for camera group optimization  :: 48
+0001693 | 2022-07-30, 08:04:57.153870 [info] - Camera  0  :: [1, 0, 0, 0;
+ 0, 1, 0, 0;
+ 0, 0, 1, 0;
+ 0, 0, 0, 1]
+0001742 | 2022-07-30, 08:04:57.157230 [info] - Final refinement done
+0001743 | 2022-07-30, 08:04:59.025911 [info] - Save parameters
+0001744 | 2022-07-30, 08:04:59.030079 [info] - mean reprojection error :: 0.441621
