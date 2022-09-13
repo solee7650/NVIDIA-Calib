@@ -104,7 +104,7 @@ Calibration::Calibration(const std::string config_path) {
   if (board_kind_per_board.size() == 0) {
 	board_kind_per_board.assign(nb_board_, board_kind);
   }
-  // std::cout<< board_kind_per_board << std::endl;
+//   std::cout<< boards_index.size() << square_size_per_board_.size() << std::endl;
 
   std::map<int, cv::Ptr<cv::aruco::CharucoBoard>> charuco_boards;
   std::map<int, cv::Ptr<cv::aruco::GridBoard>> april_boards;
@@ -232,7 +232,7 @@ void Calibration::boardExtraction() {
 
 	size_t count_frame =
     	fn.size(); // number of allowed image files in images folder
-	for (size_t frameind = 0; frameind < count_frame; frameind = frameind + 1) {
+	for (size_t frameind = 0; frameind < count_frame; frameind++ ) {
   	// open Image
   	cv::Mat currentIm = cv::imread(fn[frameind]);
   	std::string frame_path = fn[frameind];
@@ -249,7 +249,7 @@ void Calibration::boardExtraction() {
  	 
 	}
   }
-  	std::cout<< "hello" << std::endl;
+  	// std::cout<< "hello" << std::endl;
 }
 
 /**
@@ -286,7 +286,9 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
   	april_idx; // key == board id, value == ID corners on checkerboard
 
   charuco_params_->adaptiveThreshConstant = 1;
+  april_params_->adaptiveThreshConstant = 1;
   april_params_->cornerRefinementMethod = cv::aruco::CORNER_REFINE_APRILTAG;
+  april_params_->aprilTagMinWhiteBlackDiff = 1;
 
   for (int i = 0; i < nb_board_; i++) {
 	// std::cout<< boards_3d_[i]->april_board_->dictionary << std::endl;
@@ -391,6 +393,10 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
       	hpt1.at<float>(0,0) = (marker_corners[i][j][0].x + marker_corners[i][j][1].x + marker_corners[i][j][2].x + marker_corners[i][j][3].x) / 4;
       	hpt1.at<float>(1,0) = (marker_corners[i][j][0].y + marker_corners[i][j][1].y + marker_corners[i][j][2].y + marker_corners[i][j][3].y) / 4;
 
+        // hpt1.at<float>(0,0) = marker_corners[i][j][2].x;
+        // hpt1.at<float>(0,0) = marker_corners[i][j][0].y;
+
+
       	hpt2 = H * hpt1;
       	hpt2.at<float>(0,0) = hpt2.at<float>(0,0) / hpt2.at<float>(2,0);
       	hpt2.at<float>(1,0) = hpt2.at<float>(1,0) / hpt2.at<float>(2,0);
@@ -409,7 +415,7 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
       	// std::cout<<hpt2.at<float>(1,0) *  markerlength / (markerlength + markerseparation)<<std::endl;
       	// std::cout <<  boards_3d_[i]->april_board_->getGridSize().width <<std::endl;
 
-      	corner_idx =round(((float) markerx - 1)/2 + hpt2.at<float>(0,0) *  markerlength / (markerlength + markerseparation)) + markerx * round(((float) markery - 1)/2 + hpt2.at<float>(1,0) *  markerlength / (markerlength + markerseparation));
+      	corner_idx =round(((float) markerx - 1)/2 + hpt2.at<float>(0,0) *  markerlength / (markerlength + markerseparation)) + markerx * round(((float) markery - 1)/2 - hpt2.at<float>(1,0) *  markerlength / (markerlength + markerseparation));
       	// std::cout<<"corner_idx: "<<corner_idx<<std::endl;
       	if (corner_idx >= 0 && corner_idx <  markerx * markery )
       	ret = 1;
@@ -418,66 +424,66 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
       	ret = 0;
 
       	if (ret == 1){
-      	april_corners[i].push_back((marker_corners[i][j][2]));
+      	april_corners[i].push_back((marker_corners[i][j][0]));
       	// april_idx[i].push_back(marker_idx[i][j]);
       	april_idx[i].push_back(corner_idx);
+        // std::cout<< corner_idx << std::endl;
       	}
-
-
     	}
-   	 
     	}
     	// std::cout<< april_corners[i].size()  << std::endl;
     	// std::cout<< (int)round(boards_3d_[i]->nb_pts_)  << std::endl;
-
     	}
-
     	// if (ret == 1) {
     	//   for (int j = 0; j < marker_corners[i].size(); j++ ){
-
     	//   }
     	// }
 
-    	if (april_corners[i].size() ==
-        	(int)round(boards_3d_[i]->nb_pts_)) {
-      	LOG_INFO << "Number of detected corners :: " << april_corners[i].size();
-      	// Refine the detected corners
-      	// if (refine_corner_ == true) {
-      	//   std::vector<SaddlePoint> refined;
-      	//   saddleSubpixelRefinement(graymat, april_corners[i], refined,
-      	//                        	corner_ref_window_, corner_ref_max_iter_);
-      	//   for (int j = 0; j < april_corners[i].size(); j++) {
-      	// 	if (std::isinf(refined[j].x) || std::isinf(refined[j].y)) {
-      	//   	break;
-      	// 	}
-      	// 	april_corners[i][j].x = refined[j].x;
-      	// 	april_corners[i][j].y = refined[j].y;
-        	// }
+    	if ( ret == 1 && april_corners[i].size() >
+        	(int)round(min_perc_pts_ * boards_3d_[i]->nb_pts_)) {
+      		LOG_INFO << "Number of detected corners :: " << april_corners[i].size();
+      		// Refine the detected corners
+			if (refine_corner_ == true) {
+			std::vector<SaddlePoint> refined;
+			saddleSubpixelRefinement(graymat, april_corners[i], refined,
+									corner_ref_window_, corner_ref_max_iter_);
+			for (int k = 0; k < april_corners[i].size(); k++) {
+				if (std::isinf(refined[k].x) || std::isinf(refined[k].y)) {
+				break;
+				}
+				april_corners[i][k].x = refined[k].x;
+				april_corners[i][k].y = refined[k].y;
+				}
+			}
+		}
      	 
-
-      	// Check for colinnerarity
-      	std::vector<cv::Point2f> pts_on_board_2d;
-      	pts_on_board_2d.reserve(april_idx[i].size());
-      	for (const auto &charuco_idx_at_board_id : april_idx[i]) {
-        	pts_on_board_2d.emplace_back(
-            	boards_3d_[i]->pts_3d_[i].x,
-            	boards_3d_[i]->pts_3d_[i].y);
-      	}
-      	double dum_a, dum_b, dum_c;
-      	double residual;
-      	calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
+		if ( ret == 1) {
+			// Check for colinnerarity
+			std::vector<cv::Point2f> pts_on_board_2d;
+			pts_on_board_2d.reserve(april_idx[i].size());
+			for (const auto &april_idx_at_board_id : april_idx[i]) {
+				pts_on_board_2d.emplace_back(
+					boards_3d_[i]->pts_3d_[april_idx_at_board_id].x,
+					boards_3d_[i]->pts_3d_[april_idx_at_board_id].y);
+			}
+			double dum_a, dum_b, dum_c;
+			double residual;
+			calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
 
       	// Add the board to the datastructures (if it passes the collinearity
       	// check)
       	// if ((residual > boards_3d_[i]->square_size_ * 0.1) &
       	// 	(april_corners[i].size() > 4)) {
-      	if (april_corners[i].size() > 4) {
-        	std::cout << "True" << std::endl;
-        	// int board_idx = i;
-        	insertNewBoard(cam_idx, frame_idx, i,
-                      	april_corners[i], april_idx[i],
+      	// if (april_corners[i].size() > 30) {
+		
+        	// std::cout << "True" << std::endl;
+        // std::cout<< april_idx[i] <<std::endl;
+
+        	int board_idx = i;
+        	insertNewBoard(cam_idx, frame_idx, board_idx,
+                      	april_corners[board_idx], april_idx[board_idx],
                       	frame_path);
-          	}
+          	// }
         	}  
     	}
   	}
@@ -662,10 +668,18 @@ void Calibration::insertNewBoard(const int cam_idx, const int frame_idx,
   std::map<int, std::shared_ptr<Frame>>::iterator it = frames_.find(
   	frame_idx); // Check if a frame has already been initialize at this key?
   if (it != frames_.end()) {
+  // std::cout<< frame_idx << " frame end"<<std::endl;
+
 	frames_[frame_idx]->insertNewBoard(
     	new_board); // If the key already exist just push a new board in there
 	frames_[frame_idx]->frame_path_[cam_idx] = frame_path;
+//   std::shared_ptr<Frame> newFrame =
+//     	std::make_shared<Frame>(frame_idx, cam_idx, frame_path);
+    //   cams_[cam_idx]->insertNewFrame(newFrame);
+	// boards_3d_[board_idx]->insertNewFrame(newFrame);
+
   } else {
+
 	std::shared_ptr<Frame> newFrame =
     	std::make_shared<Frame>(frame_idx, cam_idx, frame_path);
 	frames_[frame_idx] = newFrame; // Initialize the Frame if key does not exist
@@ -682,6 +696,9 @@ void Calibration::insertNewBoard(const int cam_idx, const int frame_idx,
   if (itCamObs != cams_obs_.end()) {
 	// insert in list
 	cams_obs_[cam_frame_idx]->insertNewBoard(new_board);
+  std::shared_ptr<CameraObs> new_cam_obs =
+    	std::make_shared<CameraObs>(new_board);
+      	frames_[frame_idx]->insertNewCamObs(new_cam_obs);
   } else {
 	std::shared_ptr<CameraObs> new_cam_obs =
     	std::make_shared<CameraObs>(new_board);
@@ -1101,7 +1118,6 @@ void Calibration::computeCamerasPairPose() {
               	// Compute the relative pose between the cameras
               	cv::Mat inter_cam_pose =
                   	pose_cam_2 * pose_cam_1.inv(); // not sure here ...
-
               	// Store in a database
               	camera_pose_pairs_[std::make_pair(cam_id_1, cam_id_2)]
                   	.push_back(inter_cam_pose);
@@ -1527,7 +1543,6 @@ void Calibration::initNonOverlapPair(const int cam_group_id1,
 void Calibration::findPoseNoOverlapAllCamGroup() {
   no_overlap_camgroup_pair_pose_.clear();
   no_overlap_camgroup_pair_pose_.clear();
-
   // Iterate through the camera groups
   for (const auto &it_groups_1 : cam_group_) {
 	int group_idx1 = it_groups_1.first;
@@ -2078,12 +2093,19 @@ void Calibration::saveDetection(const int cam_id) {
           	it_obj_obs_object_3d_ptr) {
         	// Get the 2d and 3d pts
         	const std::vector<cv::Point2f> &pts_2d = it_obj_obs_ptr->pts_2d_;
+        	const std::vector<int> &pts_id = it_obj_obs_ptr->pts_id_;
+			int i = 0;
         	// plot the keypoints on the image (red project // green detected)
         	std::array<int, 3> &color = it_obj_obs_object_3d_ptr->color_;
         	for (const auto &pt_2d : pts_2d) {
           	cv::circle(image, cv::Point(pt_2d.x, pt_2d.y), 4,
                      	cv::Scalar(color[0], color[1], color[2]), cv::FILLED,
                      	8, 0);
+			cv::putText(image, std::to_string(pts_id[i]), cv::Point(pt_2d.x, pt_2d.y), 4, 1.0,
+                     	cv::Scalar(color[0], color[1], color[2]), 1,
+                     	cv::LINE_8, false);
+			i += 1;
+			
         	}
       	}
     	}
@@ -2154,7 +2176,8 @@ void Calibration::calibrateCameraGroup() {
   initCameraGroup();
   initAllCameraGroupObs();
   computeAllObjPoseInCameraGroup();
-  refineAllCameraGroupAndObjects();
+  refineAllCameraGroup();
+  // refineAllCameraGroupAndObjects();
 }
 
 /**
@@ -2174,7 +2197,7 @@ void Calibration::merge3DObjects() {
   mergeAllCameraGroupObs();
   estimatePoseAllObjects();
   computeAllObjPoseInCameraGroup();
-  refineAllCameraGroupAndObjects();
+  // refineAllCameraGroupAndObjects();
   this->reproErrorAllCamGroup();
 }
 
@@ -2212,6 +2235,7 @@ double Calibration::computeAvgReprojectionError() {
 
 	// iterate through frames
 	for (const auto &it_frame : cur_cam_group->frames_) {
+    if (it_frame.first == 0) {
   	auto it_frame_ptr = it_frame.second.lock();
   	if (it_frame_ptr) {
     	cv::Mat camera_list;
@@ -2240,6 +2264,8 @@ double Calibration::computeAvgReprojectionError() {
             	const std::vector<int> &obj_pts_idx = it_obj3d_ptr->pts_id_;
             	const std::vector<cv::Point2f> &obj_pts_2d =
                 	it_obj3d_ptr->pts_2d_;
+
+				if (current_cam_id != 0) {
             	camera_list.push_back(current_cam_id);
 
             	// compute the reprojection error
@@ -2269,11 +2295,13 @@ double Calibration::computeAvgReprojectionError() {
                 	computeDistanceBetweenPoints(obj_pts_2d, repro_pts);
             	total_avg_error_sum += cv::mean(error_list);
             	number_of_adds++;
+			}
           	}
         	}
       	}
     	}
   	}
+  }
 	}
   }
 

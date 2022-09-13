@@ -33,6 +33,83 @@ void runCalibrationWorkflow(std::string config_path) {
   Calib.calibrateCameraGroup();
   LOG_INFO << "Camera group calibration done!";
 
+  // // Merge objects again to deal with boards visible simultaneously from camera
+  // // groups
+  // Calib.merge3DObjects();
+
+  // // Calibrate Non-Overlapping cameras
+  // LOG_INFO << "Non-overlapping calibration initiated";
+  // Calib.findPairObjectForNonOverlap();
+  // Calib.findPoseNoOverlapAllCamGroup();
+  // LOG_INFO << "Non-overlapping calibration done!";
+
+  // // merge camera groups 1
+  // LOG_INFO << "Merge cameras and objets initiated";
+  // Calib.initInterCamGroupGraph();
+  // Calib.mergeCameraGroup();
+  // Calib.mergeAllCameraGroupObs();
+  // // Merge objects
+  // Calib.merge3DObjects();
+  // // merge camera groups 2
+  // Calib.initInterCamGroupGraph();
+  // Calib.mergeCameraGroup();
+  // Calib.mergeAllCameraGroupObs();
+  // Calib.estimatePoseAllObjects();
+  // Calib.computeAllObjPoseInCameraGroup();
+  // LOG_INFO << "Merge cameras and objets done!";
+
+  // Final Optimization
+  LOG_INFO << "Final refinement initiated";
+  // Calib.reproErrorAllCamGroup(); // this is just to check the reprojection
+  // error before optimization Calib.refineAllCameraGroup(); // Refine Camera
+  // only
+  // Calib.refineAllCameraGroupAndObjects();
+  // // Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
+  // Optimize everything including intrinsics
+  // if (Calib.fix_intrinsic_ == 0) {
+  //   Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
+  // }
+
+  Calib.reproErrorAllCamGroup();
+  LOG_INFO << "Final refinement done";
+
+  // Save images reprojection
+  if (Calib.save_detect_ == 1)
+    Calib.saveDetectionAllCam();
+  if (Calib.save_repro_ == 1)
+    Calib.saveReprojectionAllCam();
+
+  // Save camera parameters
+  LOG_INFO << "Save parameters";
+  Calib.saveCamerasParams();
+  Calib.save3DObj();
+  Calib.save3DObjPose();
+  Calib.saveReprojectionErrorToFile();
+  LOG_INFO << "mean reprojection error :: "
+           << Calib.computeAvgReprojectionError() << std::endl;
+}
+
+void runCalibrationWorkflow2(std::string config_path) {
+  // Instantiate the calibration and initialize the parameters
+  Calibration Calib(config_path);
+  Calib.boardExtraction();
+  LOG_INFO << "Board extraction done!";
+
+  // Intrinsic calibration of the cameras
+  LOG_INFO << "Intrinsic calibration initiated";
+  Calib.initIntrinsic();
+  LOG_INFO << "Intrinsic Calibration done!";
+
+  // Calibrate 3D Objects
+  LOG_INFO << "3D Object calibration initiated";
+  Calib.calibrate3DObjects();
+  LOG_INFO << "3D Object calibration done!";
+
+  // Calibrate camera groups
+  LOG_INFO << "Camera group calibration initiated";
+  Calib.calibrateCameraGroup();
+  LOG_INFO << "Camera group calibration done!";
+
   // Merge objects again to deal with boards visible simultaneously from camera
   // groups
   Calib.merge3DObjects();
@@ -96,7 +173,13 @@ int main(int argc, char *argv[]) {
     LOG_FATAL << "Config path '" << config_path << "' doesn't exist.";
     return -1;
   }
+
+
   runCalibrationWorkflow(config_path);
+
+  config_path = argv[1];
+
+  // runCalibrationWorkflow2(config_path);
 
   return 0;
 }

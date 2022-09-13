@@ -49,9 +49,12 @@ Board::Board(const std::string config_path, const int board_idx) {
     fs["resolution_y"] >> res_y_;
     fs["square_size"] >> square_size_;
   } else {
-    nb_x_square_ = number_x_square_per_board[boards_index[board_idx]];
-    nb_y_square_ = number_y_square_per_board[boards_index[board_idx]];
-    square_size_ = square_size_per_board[boards_index[board_idx]];
+    // nb_x_square_ = number_x_square_per_board[boards_index[board_idx]];
+    // nb_y_square_ = number_y_square_per_board[boards_index[board_idx]];
+    // square_size_ = square_size_per_board[boards_index[board_idx]];
+    nb_x_square_ = number_x_square_per_board[board_idx];
+    nb_y_square_ = number_y_square_per_board[board_idx];
+    square_size_ = square_size_per_board[board_idx];
   }
 
   fs.release(); // close the input file

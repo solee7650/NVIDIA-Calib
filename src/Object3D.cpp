@@ -172,7 +172,10 @@ void Object3D::refineObject(const int nb_iterations) {
             const std::vector<cv::Point2f> &board_pts_2d =
                 board_obs_ptr->pts_2d_;
             std::shared_ptr<Camera> cam_ptr = board_obs_ptr->cam_.lock();
+             
             if (cam_ptr) {
+              if (cam_ptr->cam_idx_ == 0) {
+                // std::cout<<"True"<<std::endl;
               double fx = cam_ptr->intrinsics_[0];
               double fy = cam_ptr->intrinsics_[1];
               double u0 = cam_ptr->intrinsics_[2];
@@ -204,6 +207,7 @@ void Object3D::refineObject(const int nb_iterations) {
                     current_object_obs->pose_.data(),
                     relative_board_pose_[board_obs_ptr->board_id_].data());
               }
+            }
             }
           }
         }
