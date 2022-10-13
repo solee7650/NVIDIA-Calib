@@ -1,4 +1,4 @@
-CONTAINER="mccalib"
+CONTAINER="nvidiacalib"
 PATH_TO_DATA="/home/solee/MC-Calib/data"
 DISPLAY=1
 xhost +si:localuser:root
@@ -12,7 +12,7 @@ docker run \
             --env="QT_X11_NO_MITSHM=1" \
             --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
             --volume="$HOME/.Xauthority:/home/$USER/.Xauthority:rw" \
-            --volume="${PWD}:/home/$USER/MC-Calib" \
+            --volume="${PWD}:/home/$USER/NVIDIA-Calib" \
             --volume="PATH_TO_DATA:/home/$USER/MC-Calib/data" \
             solee/mccalib
 #xhost -local:root  # resetting permissions

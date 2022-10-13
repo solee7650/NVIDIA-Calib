@@ -1,4 +1,4 @@
-CONTAINER="mccalib"
+CONTAINER="nvidiacalib"
 
 # UI permisions
 xhost +si:localuser:root

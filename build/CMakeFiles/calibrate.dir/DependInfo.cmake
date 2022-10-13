@@ -4,20 +4,20 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Board.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Board.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/BoardObs.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/BoardObs.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Calibration.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Calibration.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Camera.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Camera.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/CameraGroup.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/CameraGroup.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/CameraGroupObs.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/CameraGroupObs.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/CameraObs.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/CameraObs.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Frame.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Frame.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Graph.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Graph.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Object3D.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Object3D.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/Object3DObs.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/Object3DObs.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/geometrytools.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/geometrytools.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/logger.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/logger.cpp.o"
-  "/home/solee/MC-Calib/MA-Calibcpp/src/main_calibrate.cpp" "/home/solee/MC-Calib/MA-Calibcpp/build/CMakeFiles/calibrate.dir/src/main_calibrate.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Board.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Board.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/BoardObs.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/BoardObs.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Calibration.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Calibration.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Camera.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Camera.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/CameraGroup.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/CameraGroup.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/CameraGroupObs.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/CameraGroupObs.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/CameraObs.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/CameraObs.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Frame.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Frame.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Graph.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Graph.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Object3D.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Object3D.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/Object3DObs.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/Object3DObs.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/geometrytools.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/geometrytools.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/logger.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/logger.cpp.o"
+  "/home/solee/NVIDIA-Calib/src/main_calibrate.cpp" "/home/solee/NVIDIA-Calib/build/CMakeFiles/calibrate.dir/src/main_calibrate.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -29,7 +29,6 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/usr/local/include/apriltag"
   "../include"
   "/usr/include/opencv"
   "/usr/local/lib"

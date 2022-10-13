@@ -124,6 +124,7 @@ void BoardObs::estimatePose(const float ransac_thresh,
     if (board_3d_ptr)
       board_pts_temp.emplace_back(board_3d_ptr->pts_3d_[charuco_id]);
   }
+  std::cout<< charuco_id_.size() << std::endl;
 
   // Estimate the pose using a RANSAC
   cv::Mat r_vec(1, 3, CV_64F);
@@ -172,6 +173,7 @@ float BoardObs::computeReprojectionError() {
   std::vector<cv::Point2f> repro_pts;
   std::vector<float> error_board_vec;
   std::shared_ptr<Camera> cam_ptr = cam_.lock();
+  // if (charuco_id_.size() != 0) {
   if (cam_ptr) {
     projectPointsWithDistortion(board_pts_temp, getRotVec(), getTransVec(),
                                 cam_ptr->getCameraMat(),
@@ -192,6 +194,7 @@ float BoardObs::computeReprojectionError() {
                << "  Nb pts :: " << error_board_vec.size();
     }
   }
+// }
 
   // return mean error for the board
   return (error_board_vec.size() > 0) ? sum_err_board / error_board_vec.size()

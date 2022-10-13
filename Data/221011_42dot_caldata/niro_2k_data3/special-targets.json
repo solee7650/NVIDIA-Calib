@@ -1,0 +1,11 @@
+{
+    "ground_targets": [93,94,181,191,183,176],
+    "ignore_targets": [142,96],
+    "wheel_targets": 
+    {
+        "rearLeft": 187,
+        "rearRight": 180,
+        "frontLeft": 184,
+        "frontRight": 189 
+    }
+}

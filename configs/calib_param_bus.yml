@@ -29,12 +29,12 @@ number_camera: 9  # number of cameras in the rig to calibrate
 refine_corner: 1  # activate or deactivate the corner refinement
 min_perc_pts: 0.5  # min percentage of points visible to assume a good detection
 
-cam_params_path: "../../Data/bus/calibrated_cameras_data.yml" # "../../Images_Plan/calibrated_cameras_data.yml"  # file with cameras intrinsics to initialize the intrinsic, write "None" if no initialization available 
+cam_params_path: "../Data/bus/calibrated_cameras_data.yml" # "../../Images_Plan/calibrated_cameras_data.yml"  # file with cameras intrinsics to initialize the intrinsic, write "None" if no initialization available 
 fix_intrinsic: 1 #if 1 then the intrinsic parameters will not be estimated nor refined (initial value needed)
 
 ######################################## Images Parameters ###################################################
 #root_path: "../../Data/Niro/" #"../../Images_Sim1Cam3Board/" # "../../Images_NonOver3/"  "../../Images_Cube/" "../../Images_Plan/" "../../Images_NonOver6Cam/"
-root_path: "../../Data/bus/"
+root_path: "../Data/bus/"
 cam_prefix: "Cam_"
 
 ######################################## Optimization Parameters ###################################################
@@ -45,7 +45,7 @@ number_iterations: 1000 #Max number of iterations for the non linear refinement
 he_approach: 0 #0: bootstrapped he technique, 1: traditional he
 
 ######################################## Output Parameters ###################################################
-save_path: "../../Data/calibrated_bus/"
+save_path: "../Data/calibrated_bus/"
 save_detection: 1
 save_reprojection: 1
 camera_params_file_name: ""

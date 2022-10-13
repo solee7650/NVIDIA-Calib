@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/home/solee/MC-Calib/MA-Calibcpp/src/main_create_april.cpp
+/home/solee/NVIDIA-Calib/src/main_create_april.cpp
 boost/filesystem.hpp
-/home/solee/MC-Calib/MA-Calibcpp/src/boost/filesystem.hpp
+/home/solee/NVIDIA-Calib/src/boost/filesystem.hpp
 iomanip
 -
 opencv2/aruco/charuco.hpp

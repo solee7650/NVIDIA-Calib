@@ -258,7 +258,6 @@ cv::Mat ransacP3P(const std::vector<cv::Point3f> &scenePoints,
     std::vector<cv::Point2f> imagePoints3Pts = {
         imagePoints[idx[0]], imagePoints[idx[1]], imagePoints[idx[2]],
         imagePoints[idx[3]]};
-
     // Apply P3P (fourth point for disambiguation)
     cv::solvePnP(scenePoints3Pts, imagePoints3Pts, Intrinsic, Disto, Rot, Trans,
                  false, 2); // CV_P3P = 2

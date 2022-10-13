@@ -63,12 +63,11 @@ void runCalibrationWorkflow(std::string config_path) {
   // Calib.reproErrorAllCamGroup(); // this is just to check the reprojection
   // error before optimization Calib.refineAllCameraGroup(); // Refine Camera
   // only
-  // Calib.refineAllCameraGroupAndObjects();
-  // // Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
+  Calib.refineAllCameraGroupAndObjects();
   // Optimize everything including intrinsics
-  // if (Calib.fix_intrinsic_ == 0) {
-  //   Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
-  // }
+  if (Calib.fix_intrinsic_ == 0) {
+    Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
+  }
 
   Calib.reproErrorAllCamGroup();
   LOG_INFO << "Final refinement done";
@@ -158,8 +157,15 @@ void runCalibrationWorkflow2(std::string config_path) {
   // Save camera parameters
   LOG_INFO << "Save parameters";
   Calib.saveCamerasParams();
+
+  std::cout<< "Save camera params completed" << std::endl;
   Calib.save3DObj();
+
+  std::cout<< "Save 3D Obj completed" << std::endl;
   Calib.save3DObjPose();
+
+  std::cout<< "Save Pose comp" << std::endl;
+
   Calib.saveReprojectionErrorToFile();
   LOG_INFO << "mean reprojection error :: "
            << Calib.computeAvgReprojectionError() << std::endl;
