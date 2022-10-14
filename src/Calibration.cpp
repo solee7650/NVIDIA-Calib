@@ -302,71 +302,76 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
   april_params_->adaptiveThreshConstant = 1;
   april_params_->cornerRefinementMethod = cv::aruco::CORNER_REFINE_APRILTAG;
   april_params_->aprilTagMinWhiteBlackDiff = 1;
+
+
+	cv::aruco::detectMarkers(image, dictapril_,
+                         	marker_corners_ap, marker_idx_ap,
+                         	april_params_); // detect markers
   
   for (int i = 0; i < nb_board_; i++) {
-	if (board_kind_per_board[i] == 0){
-	// std::cout<< boards_3d_[i]->april_board_->dictionary << std::endl;
+	// if (board_kind_per_board[i] == 0){
+	// // std::cout<< boards_3d_[i]->april_board_->dictionary << std::endl;
 	
-	cv::aruco::detectMarkers(image, boards_3d_[i]->charuco_board_->dictionary,
-                         	marker_corners[i], marker_idx[i],
-                         	charuco_params_); // detect markers
+	// cv::aruco::detectMarkers(image, boards_3d_[i]->charuco_board_->dictionary,
+    //                      	marker_corners[i], marker_idx[i],
+    //                      	charuco_params_); // detect markers
 
-	if (marker_corners[i].size() > 0) {
-  	cv::aruco::interpolateCornersCharuco(marker_corners[i], marker_idx[i],
-                                       	image, boards_3d_[i]->charuco_board_,
-                                       	charuco_corners[i], charuco_idx[i]);
-	}
+	// if (marker_corners[i].size() > 0) {
+  	// cv::aruco::interpolateCornersCharuco(marker_corners[i], marker_idx[i],
+    //                                    	image, boards_3d_[i]->charuco_board_,
+    //                                    	charuco_corners[i], charuco_idx[i]);
+	// }
 
-	if (charuco_corners[i].size() >
-    	(int)round(min_perc_pts_ * boards_3d_[i]->nb_pts_)) {
-  	LOG_INFO << "Number of detected corners :: " << charuco_corners[i].size();
-  	// Refine the detected corners
-  	if (refine_corner_ == true) {
-    	std::vector<SaddlePoint> refined;
-    	saddleSubpixelRefinement(graymat, charuco_corners[i], refined,
-                             	corner_ref_window_, corner_ref_max_iter_);
-    	for (int j = 0; j < charuco_corners[i].size(); j++) {
-      	if (std::isinf(refined[j].x) || std::isinf(refined[j].y)) {
-        	break;
-      	}
-      	charuco_corners[i][j].x = refined[j].x;
-      	charuco_corners[i][j].y = refined[j].y;
-    	}
-  	}
-	}
+	// if (charuco_corners[i].size() >
+    // 	(int)round(min_perc_pts_ * boards_3d_[i]->nb_pts_)) {
+  	// LOG_INFO << "Number of detected corners :: " << charuco_corners[i].size();
+  	// // Refine the detected corners
+  	// if (refine_corner_ == true) {
+    // 	std::vector<SaddlePoint> refined;
+    // 	saddleSubpixelRefinement(graymat, charuco_corners[i], refined,
+    //                          	corner_ref_window_, corner_ref_max_iter_);
+    // 	for (int j = 0; j < charuco_corners[i].size(); j++) {
+    //   	if (std::isinf(refined[j].x) || std::isinf(refined[j].y)) {
+    //     	break;
+    //   	}
+    //   	charuco_corners[i][j].x = refined[j].x;
+    //   	charuco_corners[i][j].y = refined[j].y;
+    // 	}
+  	// }
+	// }
     
-	// Check for colinnerarity
-  	std::vector<cv::Point2f> pts_on_board_2d;
-  	pts_on_board_2d.reserve(charuco_idx[i].size());
-  	for (const auto &charuco_idx_at_board_id : charuco_idx[i]) {
-    	pts_on_board_2d.emplace_back(
-        	boards_3d_[i]->pts_3d_[charuco_idx_at_board_id].x,
-        	boards_3d_[i]->pts_3d_[charuco_idx_at_board_id].y);
-  	}
-  	double dum_a, dum_b, dum_c;
-  	double residual;
-  	calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
+	// // Check for colinnerarity
+  	// std::vector<cv::Point2f> pts_on_board_2d;
+  	// pts_on_board_2d.reserve(charuco_idx[i].size());
+  	// for (const auto &charuco_idx_at_board_id : charuco_idx[i]) {
+    // 	pts_on_board_2d.emplace_back(
+    //     	boards_3d_[i]->pts_3d_[charuco_idx_at_board_id].x,
+    //     	boards_3d_[i]->pts_3d_[charuco_idx_at_board_id].y);
+  	// }
+  	// double dum_a, dum_b, dum_c;
+  	// double residual;
+  	// calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
 
-  	// Add the board to the datastructures (if it passes the collinearity
-  	// check)
-  	if ((residual > boards_3d_[i]->square_size_ * 0.1) &
-      	(charuco_corners[i].size() > 4)) {
-    	int board_idx = i;
-    	insertNewBoard(cam_idx, frame_idx, i,
-                   	charuco_corners[i], charuco_idx[i],
-                   	frame_path);
-	}
-	}
+  	// // Add the board to the datastructures (if it passes the collinearity
+  	// // check)
+  	// if ((residual > boards_3d_[i]->square_size_ * 0.1) &
+    //   	(charuco_corners[i].size() > 4)) {
+    // 	int board_idx = i;
+    // 	insertNewBoard(cam_idx, frame_idx, i,
+    //                	charuco_corners[i], charuco_idx[i],
+    //                	frame_path);
+	// }
+	// }
   
-  else if (board_kind_per_board[i] == 1){
-	// cv::aruco::detectMarkers(image, dictapril_,
-    //                      	marker_corners_ap, marker_idx_ap,
-    //                      	april_params_); // detect markers
+  if (board_kind_per_board[i] == 1){
   
 	
-	cv::aruco::detectMarkers(image, boards_3d_[i]->april_board_->dictionary,
-                         	marker_corners[i], marker_idx[i],
-                         	april_params_); // detect markers
+	// cv::aruco::detectMarkers(image, boards_3d_[i]->april_board_->dictionary,
+    //                      	marker_corners[i], marker_idx[i],
+    //                      	april_params_); // detect markers
+
+	marker_corners[i] = marker_corners_ap;
+	marker_idx[i] = marker_idx_ap;
 	// std::cout << marker_corners[i].size() << "\n";
 	// std::cout << marker_idx[i][0] << "\n";
 	cv::Mat hpt1, hpt2;
@@ -479,7 +484,7 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
 			}
 		}
      	 
-		if ( ret == 1 && april_corners[i].size() > 4) {
+		if ( ret == 1 && april_corners[i].size() > 6) {
 			// Check for colinnerarity
 			std::vector<cv::Point2f> pts_on_board_2d;
 			pts_on_board_2d.reserve(april_idx[i].size());
@@ -2144,9 +2149,11 @@ void Calibration::saveDetection(const int cam_id) {
           	cv::circle(image, cv::Point(pt_2d.x, pt_2d.y), 4,
                      	cv::Scalar(color[0], color[1], color[2]), cv::FILLED,
                      	8, 0);
+			if (i % 4 == 2) {
 			cv::putText(image, std::to_string(pts_id[i]), cv::Point(pt_2d.x, pt_2d.y), 4, 1.0,
                      	cv::Scalar(color[0], color[1], color[2]), 1,
                      	cv::LINE_8, false);
+			}
 			i += 1;
 			
         	}

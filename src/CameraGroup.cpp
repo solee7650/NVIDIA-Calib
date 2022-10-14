@@ -217,7 +217,7 @@ void CameraGroup::refineCameraGroup(const int nb_iterations) {
                       it_obj3d_ptr->pts_2d_;
                   std::shared_ptr<Camera> cam_ptr = it_obj3d_ptr->cam_.lock();
                   if (cam_ptr) {
-                    if (cam_ptr->cam_idx_ != 0) {
+                    // if (cam_ptr->cam_idx_ != 0) {
                       // std::cout<< "True" << std::endl;
                     double fx = cam_ptr->intrinsics_[0];
                     double fy = cam_ptr->intrinsics_[1];
@@ -255,7 +255,7 @@ void CameraGroup::refineCameraGroup(const int nb_iterations) {
                       // it_obj3d->second->group_pose_);
                       // it_cam_group_obs->second->object_pose_[it_obj3d->second->object_3d_id_]
                     }
-                  }
+                  // }
                   }
                 }
               }

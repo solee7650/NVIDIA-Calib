@@ -33,30 +33,30 @@ void runCalibrationWorkflow(std::string config_path) {
   Calib.calibrateCameraGroup();
   LOG_INFO << "Camera group calibration done!";
 
-  // // Merge objects again to deal with boards visible simultaneously from camera
-  // // groups
-  // Calib.merge3DObjects();
+  // Merge objects again to deal with boards visible simultaneously from camera
+  // groups
+  Calib.merge3DObjects();
 
-  // // Calibrate Non-Overlapping cameras
-  // LOG_INFO << "Non-overlapping calibration initiated";
-  // Calib.findPairObjectForNonOverlap();
-  // Calib.findPoseNoOverlapAllCamGroup();
-  // LOG_INFO << "Non-overlapping calibration done!";
+  // Calibrate Non-Overlapping cameras
+  LOG_INFO << "Non-overlapping calibration initiated";
+  Calib.findPairObjectForNonOverlap();
+  Calib.findPoseNoOverlapAllCamGroup();
+  LOG_INFO << "Non-overlapping calibration done!";
 
-  // // merge camera groups 1
-  // LOG_INFO << "Merge cameras and objets initiated";
-  // Calib.initInterCamGroupGraph();
-  // Calib.mergeCameraGroup();
-  // Calib.mergeAllCameraGroupObs();
-  // // Merge objects
-  // Calib.merge3DObjects();
-  // // merge camera groups 2
-  // Calib.initInterCamGroupGraph();
-  // Calib.mergeCameraGroup();
-  // Calib.mergeAllCameraGroupObs();
-  // Calib.estimatePoseAllObjects();
-  // Calib.computeAllObjPoseInCameraGroup();
-  // LOG_INFO << "Merge cameras and objets done!";
+  // merge camera groups 1
+  LOG_INFO << "Merge cameras and objets initiated";
+  Calib.initInterCamGroupGraph();
+  Calib.mergeCameraGroup();
+  Calib.mergeAllCameraGroupObs();
+  // Merge objects
+  Calib.merge3DObjects();
+  // merge camera groups 2
+  Calib.initInterCamGroupGraph();
+  Calib.mergeCameraGroup();
+  Calib.mergeAllCameraGroupObs();
+  Calib.estimatePoseAllObjects();
+  Calib.computeAllObjPoseInCameraGroup();
+  LOG_INFO << "Merge cameras and objets done!";
 
   // Final Optimization
   LOG_INFO << "Final refinement initiated";
