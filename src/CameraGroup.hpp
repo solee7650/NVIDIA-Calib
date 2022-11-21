@@ -61,5 +61,6 @@ public:
   void refineCameraGroup(const int nb_iterations);
   void reproErrorCameraGroup();
   void refineCameraGroupAndObjects(const int nb_iterations);
+  void refineCameraGroupAndIntrinsics(const int nb_iterations);
   void refineCameraGroupAndObjectsAndIntrinsics(const int nb_iterations);
 };

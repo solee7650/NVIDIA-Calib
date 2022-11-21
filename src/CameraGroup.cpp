@@ -232,6 +232,9 @@ void CameraGroup::refineCameraGroup(const int nb_iterations) {
                     // We do not refine the camera pose if it is the ref camera
                     if (this->id_ref_cam_ == cam_ptr->cam_idx_)
                       refine_cam = false;
+                    // if (cam_ptr->cam_idx_ == 0) {
+                    //   refine_cam = false;
+                    // }
                     for (int i = 0; i < obj_pts_idx.size(); i++) {
                       cv::Point3f current_pts_3d =
                           obj_pts_3d[obj_pts_idx[i]]; // Current 3D pts
@@ -477,6 +480,120 @@ void CameraGroup::refineCameraGroupAndObjects(const int nb_iterations) {
     LOG_INFO << "Camera  " << it.first << "  :: " << getCameraPoseMat(it.first);
   }
 }
+
+/**
+ * @brief Refine the objects pose, camera pose in the group and board poses
+ * and cameras intrinsic parameters
+ *
+ * @param nb_iterations number of iterations for non-linear refinement
+ *
+ */
+void CameraGroup::refineCameraGroupAndIntrinsics(
+    const int nb_iterations) {
+  ceres::Problem problem;
+  LOG_INFO << "Number of frames for camera group optimization  :: "
+           << frames_.size();
+  // Iterate through frames
+  for (const auto &it_frame : frames_) {
+    auto frame_ptr = it_frame.second.lock();
+    if (frame_ptr) {
+      // Iterate through cameraGroupObs
+      std::map<int, std::weak_ptr<CameraGroupObs>> current_cam_group_obs_vec =
+          frame_ptr->cam_group_observations_;
+      for (const auto &it_cam_group_obs : current_cam_group_obs_vec) {
+        auto cam_group_obs_ptr = it_cam_group_obs.second.lock();
+        // Check if the current group the group we refine (be careful)
+        if (cam_group_obs_ptr &&
+            cam_group_idx_ == cam_group_obs_ptr->cam_group_idx_) {
+          // iterate through 3D object obs
+          std::map<int, std::weak_ptr<Object3DObs>> current_obj3d_obs_vec =
+              cam_group_obs_ptr->object_observations_;
+          for (const auto &it_obj3d : current_obj3d_obs_vec) {
+            std::shared_ptr<Object3DObs> it_obj3d_ptr = it_obj3d.second.lock();
+            if (it_obj3d_ptr) {
+              int current_cam_id = it_obj3d_ptr->camera_id_;
+              std::shared_ptr<Object3D> object_3d_ptr =
+                  it_obj3d_ptr->object_3d_.lock();
+              if (object_3d_ptr) {
+                const std::vector<cv::Point3f> &obj_pts_3d =
+                    object_3d_ptr->pts_3d_;
+                const std::vector<int> &obj_pts_idx = it_obj3d_ptr->pts_id_;
+                const std::vector<cv::Point2f> &obj_pts_2d =
+                    it_obj3d_ptr->pts_2d_;
+                std::shared_ptr<Camera> cam_ptr = it_obj3d_ptr->cam_.lock();
+                if (cam_ptr) {
+                  bool refine_cam = true;
+                  // We do not refine the camera pose if it is the ref camera
+                  if (this->id_ref_cam_ == cam_ptr->cam_idx_) {
+                    refine_cam = false;
+                  }
+                  for (int i = 0; i < obj_pts_idx.size(); i++) {
+                    cv::Point3f current_pts_3d =
+                        obj_pts_3d[obj_pts_idx[i]]; // Current 3D pts
+                    cv::Point2f current_pts_2d =
+                        obj_pts_2d[i]; // Current 2D pts
+
+                    // find the board and pts corresponding to the 3D point
+                    // object
+                    std::pair<int, int> board_id_pts_id =
+                        object_3d_ptr->pts_obj_2_board_[obj_pts_idx[i]];
+
+                    auto cur_board_pts_idx_ptr =
+                        object_3d_ptr->boards_[board_id_pts_id.first].lock();
+                    if (cur_board_pts_idx_ptr) {
+                      cv::Point3f current_pts3D_board =
+                          cur_board_pts_idx_ptr
+                              ->pts_3d_[board_id_pts_id.second];
+                      int ref_board_id = object_3d_ptr->ref_board_id_;
+                      bool refine_board = false;
+                      if (ref_board_id == board_id_pts_id.first) {
+                        refine_board = false;
+                      }
+
+                      // key(boardid//ptsid)-->pts_ind_board
+                      ceres::CostFunction *reprojection_error =
+                          ReprojectionError_CameraGroupAndObjectRefAndIntrinsics::
+                              Create(double(current_pts_2d.x),
+                                     double(current_pts_2d.y),
+                                     double(current_pts3D_board.x),
+                                     double(current_pts3D_board.y),
+                                     double(current_pts3D_board.z), refine_cam,
+                                     refine_board, cam_ptr->distortion_model_);
+                      problem.AddResidualBlock(
+                          reprojection_error,
+                          new ceres::HuberLoss(1.0), // nullptr,
+                          relative_camera_pose_[current_cam_id].data(),
+                          cam_group_obs_ptr
+                              ->object_pose_[it_obj3d_ptr->object_3d_id_]
+                              .data(),
+                          object_3d_ptr
+                              ->relative_board_pose_[board_id_pts_id.first]
+                              .data(),
+                          cam_ptr->intrinsics_.data());
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  // Run the optimization
+  ceres::Solver::Options options;
+  options.linear_solver_type = ceres::SPARSE_SCHUR;
+  options.max_num_iterations = nb_iterations;
+  options.minimizer_progress_to_stdout = true;
+  ceres::Solver::Summary summary;
+  ceres::Solve(options, &problem, &summary);
+
+  // Display poses in the group
+  for (const auto &it : relative_camera_pose_) {
+    LOG_INFO << "Camera  " << it.first << "  :: " << getCameraPoseMat(it.first);
+  }
+}
+
 
 /**
  * @brief Refine the objects pose, camera pose in the group and board poses

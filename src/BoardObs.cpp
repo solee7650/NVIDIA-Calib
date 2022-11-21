@@ -157,7 +157,6 @@ void BoardObs::estimatePose(const float ransac_thresh,
     }
     pts_2d_ = new_pts_vec;
     charuco_id_ = new_charuco_id;
-    std::cout<< charuco_id_.size() << std::endl;
   }
 }
 
@@ -165,7 +164,6 @@ float BoardObs::computeReprojectionError() {
   float sum_err_board = 0;
   std::vector<cv::Point3f> board_pts_temp;
   board_pts_temp.reserve(charuco_id_.size());
-  std::cout<< charuco_id_.size() << std::endl;
   for (const int &charuco_id : charuco_id_) {
     std::shared_ptr<Board> board_3d_ptr = board_3d_.lock();
     if (board_3d_ptr)

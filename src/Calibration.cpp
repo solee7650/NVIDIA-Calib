@@ -58,6 +58,9 @@ Calibration::Calibration(const std::string config_path) {
   fs["board_kind_per_board"] >> board_kind_per_board;
   fs["he_approach"] >> he_approach_;
   fs["fix_intrinsic"] >> fix_intrinsic_;
+  fs["fix_object"] >> fix_object_;
+  fs["object_data"] >> object_data_;
+
 
   fs.release(); // close the input file
 
@@ -69,7 +72,7 @@ Calibration::Calibration(const std::string config_path) {
   if (boards_index.size() != 0) {
 	max_board_idx = *max_element(boards_index.begin(), boards_index.end());
   }
-  if (square_size_per_board_.size() == 0) {
+  if (number_x_square_per_board_.size() == 0) {
 	number_x_square_per_board_.assign(max_board_idx + 1, nb_x_square);
 	number_y_square_per_board_.assign(max_board_idx + 1, nb_y_square);
   }
@@ -104,16 +107,12 @@ Calibration::Calibration(const std::string config_path) {
   if (board_kind_per_board.size() == 0) {
 	board_kind_per_board.assign(nb_board_, board_kind);
   }
-//   std::cout<< boards_index.size() << square_size_per_board_.size() << std::endl;
 
   std::map<int, cv::Ptr<cv::aruco::CharucoBoard>> charuco_boards;
   std::map<int, cv::Ptr<cv::aruco::GridBoard>> april_boards;
-  // std::cout<< "hello" << std::endl;
  
   int offset_count = 0;
   for (int i = 0; i < nb_board_; i++) {
-	// std::cout<< board_kind_per_board[i] << std::endl;
-	// std::cout<< i << std::endl;
 
 	if (board_kind_per_board[i] == 0){
 
@@ -149,14 +148,12 @@ Calibration::Calibration(const std::string config_path) {
   	// offset_count = id_offset;
   	for (auto &id : april->ids) {
     	id += boards_index[i] * 2;
-    	// std::cout<< id << std::endl;
   	}
 	}
 	april_boards[i] = april;
 	}
   }
 
-  // std::cout<< "hello" << std::endl;
 
   // Initialize the 3D boards
   for (int i = 0; i < nb_board_; i++) {
@@ -246,8 +243,6 @@ void Calibration::boardExtraction() {
   	std::string frame_path = fn[frameind];
   	// detect the checkerboard on this image
   	LOG_DEBUG << "Frame index :: " << frameind;
-  	// std::cout<< frameind << std::endl;
-  	// std::cout<< frame_path << std::endl;
 
 
   	detectBoards(currentIm, cam, frameind, frame_path);
@@ -257,7 +252,6 @@ void Calibration::boardExtraction() {
  	 
 	}
   }
-  	// std::cout<< "hello" << std::endl;
 }
 
 /**
@@ -298,7 +292,6 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
   std::map<int, std::vector<int>>
   	april_idx; // key == board id, value == ID corners on checkerboard
 
-  charuco_params_->adaptiveThreshConstant = 1;
   april_params_->adaptiveThreshConstant = 1;
   april_params_->cornerRefinementMethod = cv::aruco::CORNER_REFINE_APRILTAG;
   april_params_->aprilTagMinWhiteBlackDiff = 1;
@@ -309,215 +302,137 @@ void Calibration::detectBoards(const cv::Mat image, const int cam_idx,
                          	april_params_); // detect markers
   
   for (int i = 0; i < nb_board_; i++) {
-	// if (board_kind_per_board[i] == 0){
-	// // std::cout<< boards_3d_[i]->april_board_->dictionary << std::endl;
-	
-	// cv::aruco::detectMarkers(image, boards_3d_[i]->charuco_board_->dictionary,
-    //                      	marker_corners[i], marker_idx[i],
-    //                      	charuco_params_); // detect markers
-
-	// if (marker_corners[i].size() > 0) {
-  	// cv::aruco::interpolateCornersCharuco(marker_corners[i], marker_idx[i],
-    //                                    	image, boards_3d_[i]->charuco_board_,
-    //                                    	charuco_corners[i], charuco_idx[i]);
-	// }
-
-	// if (charuco_corners[i].size() >
-    // 	(int)round(min_perc_pts_ * boards_3d_[i]->nb_pts_)) {
-  	// LOG_INFO << "Number of detected corners :: " << charuco_corners[i].size();
-  	// // Refine the detected corners
-  	// if (refine_corner_ == true) {
-    // 	std::vector<SaddlePoint> refined;
-    // 	saddleSubpixelRefinement(graymat, charuco_corners[i], refined,
-    //                          	corner_ref_window_, corner_ref_max_iter_);
-    // 	for (int j = 0; j < charuco_corners[i].size(); j++) {
-    //   	if (std::isinf(refined[j].x) || std::isinf(refined[j].y)) {
-    //     	break;
-    //   	}
-    //   	charuco_corners[i][j].x = refined[j].x;
-    //   	charuco_corners[i][j].y = refined[j].y;
-    // 	}
-  	// }
-	// }
-    
-	// // Check for colinnerarity
-  	// std::vector<cv::Point2f> pts_on_board_2d;
-  	// pts_on_board_2d.reserve(charuco_idx[i].size());
-  	// for (const auto &charuco_idx_at_board_id : charuco_idx[i]) {
-    // 	pts_on_board_2d.emplace_back(
-    //     	boards_3d_[i]->pts_3d_[charuco_idx_at_board_id].x,
-    //     	boards_3d_[i]->pts_3d_[charuco_idx_at_board_id].y);
-  	// }
-  	// double dum_a, dum_b, dum_c;
-  	// double residual;
-  	// calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
-
-  	// // Add the board to the datastructures (if it passes the collinearity
-  	// // check)
-  	// if ((residual > boards_3d_[i]->square_size_ * 0.1) &
-    //   	(charuco_corners[i].size() > 4)) {
-    // 	int board_idx = i;
-    // 	insertNewBoard(cam_idx, frame_idx, i,
-    //                	charuco_corners[i], charuco_idx[i],
-    //                	frame_path);
-	// }
-	// }
   
-  if (board_kind_per_board[i] == 1){
+  	if (board_kind_per_board[i] == 1){
   
-	
-	// cv::aruco::detectMarkers(image, boards_3d_[i]->april_board_->dictionary,
-    //                      	marker_corners[i], marker_idx[i],
-    //                      	april_params_); // detect markers
+		marker_corners[i] = marker_corners_ap;
+		marker_idx[i] = marker_idx_ap;
+		cv::Mat hpt1, hpt2;
 
-	marker_corners[i] = marker_corners_ap;
-	marker_idx[i] = marker_idx_ap;
-	// std::cout << marker_corners[i].size() << "\n";
-	// std::cout << marker_idx[i][0] << "\n";
-	cv::Mat hpt1, hpt2;
+		if (marker_corners[i].size() > 0) {
+			std::vector<cv::Point2f> pts1(4), pts2(4);
+			cv::Mat H;
+			int ret = 0; // return, if normal detection: 1 / else if abnormal detection: 0
+			for (int j = 0; j < marker_corners[i].size(); j++ ){
+				// comparing (GT) points: 2 ------- 3
+				//						  |	   | 	|
+				//						  |- - O - -|
+				//						  |	   | 	|
+				//						  1 ------- 0
+				pts2 = {{0.5,0.5}, {-0.5,0.5}, {-0.5,-0.5}, {0.5,-0.5}};
 
-	if (marker_corners[i].size() > 0) {
-  	// april_corners[i]=marker_corners[i][0];
-  	std::vector<cv::Point2f> pts1(4), pts2(4);
-  	cv::Mat H;
-  	int ret = 0;
-  	for (int j = 0; j < marker_corners[i].size(); j++ ){
-    	// std::vector<cv::Point2f>  pts2(4) = {{1,1}, {0,1}, {0,0}, {1,0}};
-    	pts2 = {{0.5,0.5}, {-0.5,0.5}, {-0.5,-0.5}, {0.5,-0.5}};
+				if (marker_idx[i][j] == 2 * boards_index[i]){
 
-    	// std::vector<cv::Point3f> hpts1(4), hpts2(4);
-   	 
-    	// std::cout<<marker_idx[i][j] <<std::endl;
-    	if (marker_idx[i][j] == 2 * boards_index[i]){
-      	ret = 1;
+					for (int k = 0; k < 4; k++)
+					pts1[k] = marker_corners[i][j][k];
 
-      	for (int k = 0; k < 4; k++)
-      	pts1[k] =marker_corners[i][j][k];
+					H = cv::findHomography(pts1, pts2); // Homography matrix for detectedPts -> GTPts
+					
+					int thres = 31; // threshold value of minimum pixel size(thres * thres) for detected tag area.
 
-      	H = cv::findHomography(pts1, pts2);
-      	H.convertTo(H,CV_32FC1);
+					if ((cv::norm(pts1[0]-pts1[1])+cv::norm(pts1[3]-pts1[2]))/2 > thres & 
+					(cv::norm(pts1[0]-pts1[3]) + cv::norm(pts1[1]-pts1[2])) /2  > thres & 
+					1.16 > (cv::norm(pts1[0]-pts1[1]) + cv::norm(pts1[3]-pts1[2]))/2 *cv::sqrt(2) / cv::norm(pts1[1]-pts1[3])  > 0.86 & 
+					1.16 > (cv::norm(pts1[0]-pts1[3]) + cv::norm(pts1[1]-pts1[2]))/2 *cv::sqrt(2) / cv::norm(pts1[0]-pts1[2])  > 0.86 )
+						ret = 1;
 
-      	for (int k = 0; k < 4; k++) {
-        	hpt1 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
-        	hpt1.at<float>(0,0) = pts1[k].x;
-        	hpt1.at<float>(1,0) = pts1[k].y;
+					H.convertTo(H,CV_32FC1);
 
-        	hpt2 = H * hpt1;
-        	hpt2.at<float>(0,0) = hpt2.at<float>(0,0) / hpt2.at<float>(2,0);
-        	hpt2.at<float>(1,0) = hpt2.at<float>(1,0) / hpt2.at<float>(2,0);
+					for (int k = 0; k < 4; k++) {
+						hpt1 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
+						hpt1.at<float>(0,0) = pts1[k].x;
+						hpt1.at<float>(1,0) = pts1[k].y;
 
-        	// std::cout << hpt2 << std::endl;
-      	}
-    	}
-  	}
-  	if (ret == 1) {
-  	for (int j = 0; j < marker_corners[i].size(); j++ ){
-   	 
-    	if (marker_idx[i][j] == 2 * boards_index[i]  ||  marker_idx[i][j] == 2 * boards_index[i] +1) {
-      	hpt1 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
-      	hpt1.at<float>(0,0) = (marker_corners[i][j][0].x + marker_corners[i][j][1].x + marker_corners[i][j][2].x + marker_corners[i][j][3].x) / 4;
-      	hpt1.at<float>(1,0) = (marker_corners[i][j][0].y + marker_corners[i][j][1].y + marker_corners[i][j][2].y + marker_corners[i][j][3].y) / 4;
-
-        // hpt1.at<float>(0,0) = marker_corners[i][j][2].x;
-        // hpt1.at<float>(0,0) = marker_corners[i][j][0].y;
-
-
-      	hpt2 = H * hpt1;
-      	hpt2.at<float>(0,0) = hpt2.at<float>(0,0) / hpt2.at<float>(2,0);
-      	hpt2.at<float>(1,0) = hpt2.at<float>(1,0) / hpt2.at<float>(2,0);
-      	int corner_idx;
-      	float markerx, markery;
-      	float markerlength, markerseparation;
-      	// cv::Size(markerx, markery) = boards_3d_[i]->april_board_->getGridSize();
-      	markerx = boards_3d_[i]->april_board_->getGridSize().width;
-      	markery = boards_3d_[i]->april_board_->getGridSize().height;
-
-
-      	//  = boards_3d_[i]->april_board_->markerY;
-      	markerlength = boards_3d_[i]->april_board_->getMarkerLength();
-      	markerseparation = boards_3d_[i]->april_board_->getMarkerSeparation();
-
-      	// std::cout<<hpt2.at<float>(1,0) *  markerlength / (markerlength + markerseparation)<<std::endl;
-      	// std::cout <<  boards_3d_[i]->april_board_->getGridSize().width <<std::endl;
-
-      	corner_idx =round(((float) markerx - 1)/2 + hpt2.at<float>(0,0) *  markerlength / (markerlength + markerseparation)) + markerx * round(((float) markery - 1)/2 + hpt2.at<float>(1,0) *  markerlength / (markerlength + markerseparation));
-      	// std::cout<<"corner_idx: "<<corner_idx<<std::endl;
-      	if (corner_idx >= 0 && corner_idx <  markerx * markery )
-      	ret = 1;
-
-      	else
-      	ret = 0;
-
-      	if (ret == 1){
-			for (int k = 0; k < 4; k++) {
-      	april_corners[i].push_back(marker_corners[i][j][k]);
-      	// april_idx[i].push_back(marker_idx[i][j]);
-      	april_idx[i].push_back(4 * corner_idx + k);
-        // std::cout<< corner_idx << std::endl;
-		}
-      	}
-    	}
-    	}
-    	// std::cout<< april_corners[i].size()  << std::endl;
-    	// std::cout<< (int)round(boards_3d_[i]->nb_pts_)  << std::endl;
-    	}
-    	// if (ret == 1) {
-    	//   for (int j = 0; j < marker_corners[i].size(); j++ ){
-    	//   }
-    	// }
-
-    	if ( ret == 1 && april_corners[i].size() >
-        	(int)round(min_perc_pts_ * boards_3d_[i]->nb_pts_)) {
-      		LOG_INFO << "Number of detected corners :: " << april_corners[i].size();
-      		// Refine the detected corners
-			if (refine_corner_ == true) {
-			std::vector<SaddlePoint> refined;
-			saddleSubpixelRefinement(graymat, april_corners[i], refined,
-									corner_ref_window_, corner_ref_max_iter_);
-			for (int k = 0; k < april_corners[i].size(); k++) {
-				if (std::isinf(refined[k].x) || std::isinf(refined[k].y)) {
-				break;
-				}
-				april_corners[i][k].x = refined[k].x;
-				april_corners[i][k].y = refined[k].y;
+						hpt2 = H * hpt1;
+						hpt2.at<float>(0,0) = hpt2.at<float>(0,0) / hpt2.at<float>(2,0);
+						hpt2.at<float>(1,0) = hpt2.at<float>(1,0) / hpt2.at<float>(2,0);
+					}
 				}
 			}
-		}
-     	 
-		if ( ret == 1 && april_corners[i].size() > 6) {
-			// Check for colinnerarity
-			std::vector<cv::Point2f> pts_on_board_2d;
-			pts_on_board_2d.reserve(april_idx[i].size());
-			for (const auto &april_idx_at_board_id : april_idx[i]) {
-				pts_on_board_2d.emplace_back(
-					boards_3d_[i]->pts_3d_[april_idx_at_board_id].x,
-					boards_3d_[i]->pts_3d_[april_idx_at_board_id].y);
+			if (ret == 1) {
+				for (int j = 0; j < marker_corners[i].size(); j++ ){
+				
+					if (marker_idx[i][j] == 2 * boards_index[i]  ||  marker_idx[i][j] == 2 * boards_index[i] +1) {
+						hpt1 = cv::Mat (3,1, CV_32FC1, cv::Scalar(1));
+						hpt1.at<float>(0,0) = (marker_corners[i][j][0].x + marker_corners[i][j][1].x + marker_corners[i][j][2].x + marker_corners[i][j][3].x) / 4;
+						hpt1.at<float>(1,0) = (marker_corners[i][j][0].y + marker_corners[i][j][1].y + marker_corners[i][j][2].y + marker_corners[i][j][3].y) / 4;
+
+						hpt2 = H * hpt1;
+						hpt2.at<float>(0,0) = hpt2.at<float>(0,0) / hpt2.at<float>(2,0);
+						hpt2.at<float>(1,0) = hpt2.at<float>(1,0) / hpt2.at<float>(2,0);
+						int corner_idx;
+						float markerx, markery;
+						float markerlength, markerseparation;
+						markerx = boards_3d_[i]->april_board_->getGridSize().width;
+						markery = boards_3d_[i]->april_board_->getGridSize().height;
+
+						markerlength = boards_3d_[i]->april_board_->getMarkerLength();
+						markerseparation = boards_3d_[i]->april_board_->getMarkerSeparation();
+
+
+						corner_idx =round(((float) markerx - 1)/2 + hpt2.at<float>(0,0) *  markerlength / (markerlength + markerseparation))
+									+ markerx * round(((float) markery - 1)/2 + hpt2.at<float>(1,0) *  markerlength / (markerlength + markerseparation));
+						if (corner_idx >= 0 & corner_idx <  markerx * markery )
+							ret = 1;
+
+						else {
+							ret = 0;
+						}
+
+						if (ret == 1){
+							for (int k = 0; k < 4; k++) {
+								april_corners[i].push_back(marker_corners[i][j][k]);
+								april_idx[i].push_back(4 * corner_idx + k);
+							}
+						}
+					}
+				}
 			}
-			double dum_a, dum_b, dum_c;
-			double residual;
-			calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
 
-      	// Add the board to the datastructures (if it passes the collinearity
-      	// check)
-      	// if ((residual > boards_3d_[i]->square_size_ * 0.1) &
-      	// 	(april_corners[i].size() > 4)) {
-      	// if (april_corners[i].size() > 30) {
-		
-        	// std::cout << "True" << std::endl;
-        // std::cout<< april_idx[i] <<std::endl;
+				if ( ret == 1 && april_corners[i].size() >
+					(int)round(min_perc_pts_ * boards_3d_[i]->nb_pts_)) {
+					LOG_INFO << "Number of detected corners :: " << april_corners[i].size();
 
-        	int board_idx = i;
-        	insertNewBoard(cam_idx, frame_idx, board_idx,
-                      	april_corners[board_idx], april_idx[board_idx],
-                      	frame_path);
-          	// }
-        	}  
-    	}
-  	}
-//   	for(auto &it : marker_corners[i])
-// {
-// 	// std::cout << it << "\n";
-// }
+					// Refine the detected corners
+					if (refine_corner_ == true) {
+					std::vector<SaddlePoint> refined;
+					saddleSubpixelRefinement(graymat, april_corners[i], refined,
+											corner_ref_window_, corner_ref_max_iter_);
+					for (int k = 0; k < april_corners[i].size(); k++) {
+						if (std::isinf(refined[k].x) || std::isinf(refined[k].y)) {
+						break;
+						}
+						april_corners[i][k].x = refined[k].x;
+						april_corners[i][k].y = refined[k].y;
+						}
+					}
+				}
+				
+				if ( ret == 1 & april_corners[i].size() > 7) {
+					// Check for colinnerarity
+					std::vector<cv::Point2f> pts_on_board_2d;
+					pts_on_board_2d.reserve(april_idx[i].size());
+					for (const auto &april_idx_at_board_id : april_idx[i]) {
+						pts_on_board_2d.emplace_back(
+							boards_3d_[i]->pts_3d_[april_idx_at_board_id].x,
+							boards_3d_[i]->pts_3d_[april_idx_at_board_id].y);
+					}
+					double dum_a, dum_b, dum_c;
+					double residual;
+					calcLinePara(pts_on_board_2d, dum_a, dum_b, dum_c, residual);
+
+					// Add the board to the datastructures (if it passes the collinearity
+					// check)
+					// if ((residual > boards_3d_[i]->square_size_ * 0.1) &
+					// 	(april_corners[i].size() > 4)) {
+					int board_idx = i;
+					insertNewBoard(cam_idx, frame_idx, board_idx,
+								april_corners[board_idx], april_idx[board_idx],
+								frame_path);
+					// }
+				}  
+    		}
+  		}
 	}
     
   }
@@ -573,48 +488,102 @@ void Calibration::saveCamerasParams() {
 void Calibration::save3DObj() {
   std::string save_path_object = save_path_ + "calibrated_objects_data.yml";
   cv::FileStorage fs(save_path_object, cv::FileStorage::WRITE);
+	fs << "nb_obj" << int(object_3d_.size());
+
   for (const auto &it_obj : object_3d_) {
-	// int hello = 0;
-	// hello += 1;
-	// std::cout<<"hello" << hello << std::endl;
 	std::shared_ptr<Object3D> cur_object = it_obj.second;
 	fs << "object_" + std::to_string(cur_object->obj_id_);
 	int obj_nb_pts = cur_object->nb_pts_;
 	cv::Mat pts_mat(3, obj_nb_pts, CV_32FC1);
 	for (int i = 0; i < obj_nb_pts; i++) {
-  	cv::Point3f curr_pts = cur_object->pts_3d_[i];
-  	pts_mat.at<float>(0, i) = curr_pts.x;
-  	pts_mat.at<float>(1, i) = curr_pts.y;
-  	pts_mat.at<float>(2, i) = curr_pts.z;
+		cv::Point3f curr_pts = cur_object->pts_3d_[i];
+		pts_mat.at<float>(0, i) = curr_pts.x;
+		pts_mat.at<float>(1, i) = curr_pts.y;
+		pts_mat.at<float>(2, i) = curr_pts.z;
 	}
 	fs << "{"
-   	<< "points" << pts_mat;
-	// fs << "}";
+	<< "nb_boards" << int(cur_object->nb_boards_);
+	fs << "nb_pts" << int(cur_object->nb_pts_);
+	fs << "ref_board_id_" << int(cur_object->ref_board_id_);
 
 
-	// cv::Mat rel_pose;
-	cv::Mat pose_mat(6, cur_object->relative_board_pose_.size(), CV_64FC1);
 	std::map<int, std::array<double, 6>> rel_pose  = cur_object->relative_board_pose_;
 	int a =0;
-	for (int i = 0; i < rel_pose.size(); i++ ){
-		// fs << "board_" + std::to_string(cur_object->boards_[]);
+	// fs << "board_id_ " << cur_object.size();
+	for (const auto &it_board : cur_object->boards_) {
+      	std::shared_ptr<Board> current_board = it_board.second.lock();
+		cv::Mat pose_mat(4, 4, CV_64FC1);
+
     	
-		// std::cout<<cur_object->relative_board_pose_.size()<<std::endl;
-    	pose_mat.at<double>(0, a) = cur_object->relative_board_pose_[i].at(0);
-    	pose_mat.at<double>(1, a) = cur_object->relative_board_pose_[i].at(1);
-    	pose_mat.at<double>(2, a) = cur_object->relative_board_pose_[i].at(2);
-    	pose_mat.at<double>(3, a) = cur_object->relative_board_pose_[i].at(3);
-    	pose_mat.at<double>(4, a) = cur_object->relative_board_pose_[i].at(4);
-    	pose_mat.at<double>(5, a) = cur_object->relative_board_pose_[i].at(5);
+    	// pose_mat.at<double>(0, 0) = cur_object->getBoardRotVec(current_board->board_id_).at<double>(0);
+    	// pose_mat.at<double>(1, 0) = cur_object->getBoardRotVec(current_board->board_id_).at<double>(1);
+    	// pose_mat.at<double>(2, 0) = cur_object->getBoardRotVec(current_board->board_id_).at<double>(2);
+    	// pose_mat.at<double>(3, 0) = cur_object->getBoardTransVec(current_board->board_id_).at<double>(0);
+    	// pose_mat.at<double>(4, 0) = cur_object->getBoardTransVec(current_board->board_id_).at<double>(1);
+    	// pose_mat.at<double>(5, 0) = cur_object->getBoardTransVec(current_board->board_id_).at<double>(2);
+		pose_mat = cur_object->getBoardPoseMat(current_board->board_id_);
+		fs << "board_" + std::to_string(a);
+		fs << "{" << "board_id" << current_board->board_id_;
+		fs <<  "inner_pose" << pose_mat;
+		fs << "}";
     	a += 1;
-		}
-	// fs << "{"
-	fs << "inner_poses" << pose_mat;
+
+	}
+   	fs << "points" << pts_mat;
+	
 	fs << "}";
 	fs.release();
   }
   
 }
+// void Calibration::save3DObj() {
+//   std::string save_path_object = save_path_ + "calibrated_objects_data.yml";
+//   cv::FileStorage fs(save_path_object, cv::FileStorage::WRITE);
+// 	fs << "nb_obj" << int(object_3d_.size());
+
+//   for (const auto &it_obj : object_3d_) {
+// 	std::shared_ptr<Object3D> cur_object = it_obj.second;
+// 	fs << "object_" + std::to_string(cur_object->obj_id_);
+// 	int obj_nb_pts = cur_object->nb_pts_;
+// 	cv::Mat pts_mat(3, obj_nb_pts, CV_32FC1);
+// 	for (int i = 0; i < obj_nb_pts; i++) {
+// 		cv::Point3f curr_pts = cur_object->pts_3d_[i];
+// 		pts_mat.at<float>(0, i) = curr_pts.x;
+// 		pts_mat.at<float>(1, i) = curr_pts.y;
+// 		pts_mat.at<float>(2, i) = curr_pts.z;
+// 	}
+// 	fs << "{"
+// 	<< "nb_boards" << int(cur_object->nb_boards_);
+// 	fs << "nb_pts" << int(cur_object->nb_pts_);
+// 	fs << "ref_board_id_" << int(cur_object->ref_board_id_);
+
+//    	fs << "points" << pts_mat;
+
+// 	std::map<int, std::array<double, 6>> rel_pose  = cur_object->relative_board_pose_;
+// 	int a =0;
+// 	fs << "inner_poses_ " << cur_object->ref_board_id_;
+// 	for (const auto &it_board : cur_object->boards_) {
+//       	std::shared_ptr<Board> current_board = it_board.second.lock();
+// 		cv::Mat pose_mat(6, 1, CV_64FC1);
+
+    	
+// 		// std::cout<<cur_object->relative_board_pose_.size()<<std::endl;
+//     	pose_mat.at<double>(0, 0) = cur_object->getBoardRotVec(current_board->board_id_).at<double>(0);
+//     	pose_mat.at<double>(1, 0) = cur_object->getBoardRotVec(current_board->board_id_).at<double>(1);
+//     	pose_mat.at<double>(2, 0) = cur_object->getBoardRotVec(current_board->board_id_).at<double>(2);
+//     	pose_mat.at<double>(3, 0) = cur_object->getBoardTransVec(current_board->board_id_).at<double>(0);
+//     	pose_mat.at<double>(4, 0) = cur_object->getBoardTransVec(current_board->board_id_).at<double>(1);
+//     	pose_mat.at<double>(5, 0) = cur_object->getBoardTransVec(current_board->board_id_).at<double>(2);
+//     	a += 1;
+// 		fs << "board_id_" << current_board->board_id_;
+// 		fs <<"inner_poses" << pose_mat;
+// 	}
+	
+// 	fs << "}";
+// 	fs.release();
+//   }
+  
+// }
 
 /**
  * @brief Save 3D object poses for each frame where the object is visible
@@ -717,18 +686,12 @@ void Calibration::insertNewBoard(const int cam_idx, const int frame_idx,
   std::map<int, std::shared_ptr<Frame>>::iterator it = frames_.find(
   	frame_idx); // Check if a frame has already been initialize at this key?
   if (it != frames_.end()) {
-  // std::cout<< frame_idx << " frame end"<<std::endl;
 
 	frames_[frame_idx]->insertNewBoard(
     	new_board); // If the key already exist just push a new board in there
 	frames_[frame_idx]->frame_path_[cam_idx] = frame_path;
-//   std::shared_ptr<Frame> newFrame =
-//     	std::make_shared<Frame>(frame_idx, cam_idx, frame_path);
-    //   cams_[cam_idx]->insertNewFrame(newFrame);
-	// boards_3d_[board_idx]->insertNewFrame(newFrame);
 
   } else {
-
 	std::shared_ptr<Frame> newFrame =
     	std::make_shared<Frame>(frame_idx, cam_idx, frame_path);
 	frames_[frame_idx] = newFrame; // Initialize the Frame if key does not exist
@@ -742,17 +705,14 @@ void Calibration::insertNewBoard(const int cam_idx, const int frame_idx,
   std::map<std::pair<int, int>, std::shared_ptr<CameraObs>>::iterator itCamObs =
   	cams_obs_.find(cam_frame_idx); // Check if a Camobs has already been
                                  	// initialize at this key?
-  if (itCamObs != cams_obs_.end()) {
-	// insert in list
-	cams_obs_[cam_frame_idx]->insertNewBoard(new_board);
-  std::shared_ptr<CameraObs> new_cam_obs =
-    	std::make_shared<CameraObs>(new_board);
-      	frames_[frame_idx]->insertNewCamObs(new_cam_obs);
+   if (itCamObs != cams_obs_.end()) {
+    // insert in list
+    cams_obs_[cam_frame_idx]->insertNewBoard(new_board);
   } else {
-	std::shared_ptr<CameraObs> new_cam_obs =
-    	std::make_shared<CameraObs>(new_board);
-	cams_obs_[cam_frame_idx] = new_cam_obs;
-	frames_[frame_idx]->insertNewCamObs(new_cam_obs);
+    std::shared_ptr<CameraObs> new_cam_obs =
+        std::make_shared<CameraObs>(new_board);
+    cams_obs_[cam_frame_idx] = new_cam_obs;
+    frames_[frame_idx]->insertNewCamObs(new_cam_obs);
   }
 }
 
@@ -802,9 +762,7 @@ void Calibration::initializeCalibrationAllCam() {
 
   } else {
 	LOG_INFO << "Initializing camera calibration using images";
-	std::cout<< cams_.size() << std::endl;
 	for (const auto &it : cams_) {
-  	// std::cout<< it.first << std::endl;
 
   	it.second->initializeCalibration();
   }
@@ -962,6 +920,97 @@ void Calibration::initInterBoardsGraph() {
 	covis_boards_graph_.addEdge(board_pair_idx.first, board_pair_idx.second,
                             	((double)1 / board_poses_temp.size()));
   }
+}
+
+/**
+ * @brief Initialize 3D objects using mean inter board pose estimation
+ *
+ * The connected components in the inter-board graph forms an object. An object
+ * is formed of multiple board which are not necessarily physically connected
+ * together
+ */
+void Calibration::init3DObjectsload() {
+
+	cv::FileStorage fs;
+	const bool is_file_available =
+    	boost::filesystem::exists(object_data_) &&
+    	object_data_.length() > 0;
+	if (!is_file_available) {
+  	LOG_FATAL << "Object data path '" << object_data_
+            	<< "' doesn't exist.";
+  	return;
+	}
+	fs.open(object_data_, cv::FileStorage::READ);
+
+	LOG_INFO << "Initializing 3D objects from " << object_data_;
+
+	int objnb = fs["nb_obj"];
+	// cv::FileNode loaded_objnb = fs["nb_obj"];
+	for(int i = 0; i < objnb; i++) {
+  	cv::FileNode curr_obj_datas = fs["object_" + std::to_string(i)];
+
+	int boardsnb;
+	int ptsnb;
+	curr_obj_datas["nb_boards"] >> boardsnb;
+	
+	curr_obj_datas["nb_pts"] >> ptsnb;
+
+	// Find the reference board in this object
+	int ref_board_id;
+	
+	curr_obj_datas["ref_board_id"] >> ref_board_id;
+
+
+	// Declare a new 3D object
+	std::shared_ptr<Object3D> newObject3D =
+    	std::make_shared<Object3D>(boardsnb, ref_board_id, i,
+                               	boards_3d_[ref_board_id]->color_);
+
+	std::cout<< boardsnb << std::endl;
+	std::cout<< ptsnb << std::endl;
+	std::cout<< ref_board_id << std::endl;
+	
+	int pts_count = 0;
+	// for (const auto &it : objnb) {
+  	// extract camera matrix and distortion coefficients from the file
+
+	for (int j = 0; j < boardsnb; j++) {
+		cv::FileNode curr_board_datas = curr_obj_datas["board_" + std::to_string(j)];
+		int current_board_id;
+		curr_board_datas["board_id"] >> current_board_id;
+		std::cout<< current_board_id << std::endl;
+
+		newObject3D->insertBoardInObject(boards_3d_[current_board_id]);
+
+		// cv::Mat transform = (cv::Mat_<double>(4, 4) << 1, 0, 0, 0, 0, 1, 0, 0, 0,
+        //                	0, 1, 0, 0, 0, 0,
+        //                	1); // initialize the transformation to identity
+		cv::Mat transform;
+		curr_board_datas["inner_pose"] >> transform;
+		// transform = transform.inv();
+
+		// Store the relative board transformation in the object
+  		newObject3D->setBoardPoseMat(transform, current_board_id);
+	// Transform the 3D pts to push in the object 3D
+  	std::vector<cv::Point3f> trans_pts =
+      	transform3DPts(boards_3d_[current_board_id]->pts_3d_,
+                     	newObject3D->getBoardRotVec(current_board_id),
+                     	newObject3D->getBoardTransVec(current_board_id));
+  	// Make a indexing between board to object
+  	for (int k = 0; k < trans_pts.size(); k++) {
+    	int char_id = k;
+    	std::pair<int, int> boardid_charid =
+        	std::make_pair(current_board_id, char_id);
+    	newObject3D->pts_board_2_obj_[boardid_charid] = pts_count;
+    	newObject3D->pts_obj_2_board_.push_back(boardid_charid);
+    	newObject3D->pts_3d_.push_back(trans_pts[k]);
+    	pts_count++;
+  	}
+  	LOG_DEBUG << "Board ID :: " << current_board_id;
+	}
+	object_3d_[i] = newObject3D;
+	}
+
 }
 
 /**
@@ -1986,6 +2035,24 @@ void Calibration::refineAllCameraGroupAndObjects() {
 }
 
 /**
+ * @brief Non-linear optimization of the camera pose in the groups, the pose
+ * of the observed objects, and the pose of the boards in the 3D objects
+ *
+ */
+void Calibration::refineAllCameraGroupAndIntrinsic() {
+  for (const auto &it : cam_group_)
+	it.second->refineCameraGroupAndIntrinsics(nb_iterations_);
+
+  // Update the 3D objects
+  for (const auto &it : object_3d_)
+	it.second->updateObjectPts();
+
+  // Update the object3D observation
+  for (const auto &it : cams_group_obs_)
+	it.second->updateObjObsPose();
+}
+
+/**
  * @brief Save reprojection results images for a given camera.
  *
  */
@@ -2150,7 +2217,7 @@ void Calibration::saveDetection(const int cam_id) {
                      	cv::Scalar(color[0], color[1], color[2]), cv::FILLED,
                      	8, 0);
 			if (i % 4 == 2) {
-			cv::putText(image, std::to_string(pts_id[i]), cv::Point(pt_2d.x, pt_2d.y), 4, 1.0,
+			cv::putText(image, std::to_string((pts_id[i] -2) /4), cv::Point(pt_2d.x, pt_2d.y), 4, 1.0,
                      	cv::Scalar(color[0], color[1], color[2]), 1,
                      	cv::LINE_8, false);
 			}
@@ -2192,15 +2259,12 @@ void Calibration::saveDetectionAllCam() {
  */
 void Calibration::initIntrinsic() {
   initializeCalibrationAllCam();
-  std::cout<< "hello" <<std::endl;
   estimatePoseAllBoards();
   if (fix_intrinsic_ == 0) {
 	refineIntrinsicAndPoseAllCam();
   }
-  std::cout<< "hello2" <<std::endl;
 
   computeReproErrAllBoard();
-  std::cout<< "hello3" <<std::endl;
 
 }
 
@@ -2212,11 +2276,19 @@ void Calibration::calibrate3DObjects() {
   computeBoardsPairPose();
   initInterTransform(board_pose_pairs_, inter_board_transform_);
   initInterBoardsGraph();
-  init3DObjects();
+  
+  if (!object_data_.empty() && object_data_ != "None") {
+    init3DObjectsload();
+  }
+  else {
+	init3DObjects();
+  }
   initAll3DObjectObs();
   estimatePoseAllObjects();
   computeReproErrAllObject();
+  if (fix_object_ == 0) {
   refineAllObject3D();
+  }
   computeReproErrAllObject();
 }
 
@@ -2232,7 +2304,9 @@ void Calibration::calibrateCameraGroup() {
   initAllCameraGroupObs();
   computeAllObjPoseInCameraGroup();
   refineAllCameraGroup();
-  // refineAllCameraGroupAndObjects();
+  if (fix_object_ == 0) {
+  refineAllCameraGroupAndObjects();
+  }
 }
 
 /**
@@ -2252,7 +2326,9 @@ void Calibration::merge3DObjects() {
   mergeAllCameraGroupObs();
   estimatePoseAllObjects();
   computeAllObjPoseInCameraGroup();
-  // refineAllCameraGroupAndObjects();
+  if (fix_object_ == 0) {
+  refineAllCameraGroupAndObjects();
+  }
   this->reproErrorAllCamGroup();
 }
 
@@ -2320,8 +2396,8 @@ double Calibration::computeAvgReprojectionError() {
             	const std::vector<cv::Point2f> &obj_pts_2d =
                 	it_obj3d_ptr->pts_2d_;
 
-				if (current_cam_id != 0) {
-            	camera_list.push_back(current_cam_id);
+				// if (current_cam_id != 0) {
+            	// camera_list.push_back(current_cam_id);
 
             	// compute the reprojection error
             	std::vector<cv::Point3f> object_pts;
@@ -2350,7 +2426,7 @@ double Calibration::computeAvgReprojectionError() {
                 	computeDistanceBetweenPoints(obj_pts_2d, repro_pts);
             	total_avg_error_sum += cv::mean(error_list);
             	number_of_adds++;
-			}
+			// }
           	}
         	}
       	}

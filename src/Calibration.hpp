@@ -56,6 +56,7 @@ public:
   std::string root_dir_, cam_prefix_;
 
   // intput/output path
+  std::string object_data_; // path to precalibrated object data
   std::string cam_params_path_; // path to precalibrated cameras intrinsics
   std::string save_path_;       // path to save calibrated cameras parameter
   std::string camera_params_file_name_; // file name with cameras params
@@ -80,6 +81,7 @@ public:
 
   // fix intrinsic parameters
   int fix_intrinsic_ = 0;
+  int fix_object_ = 0;
 
   // Data structures
   std::map<int, std::shared_ptr<BoardObs>>
@@ -186,6 +188,7 @@ public:
                              // poses
   void initInterBoardsGraph(); // Initialize the graph
   void init3DObjects();        // initialize the 3D objects with the board graph
+  void init3DObjectsload();        // initialize the 3D objects with the board graph
   void init3DObjectObs(
       const int object_idx);       // initialize the 3D objects observations
   void initAll3DObjectObs();       // initialize all the 3D objects observations
@@ -225,6 +228,7 @@ public:
   void mergeAllObjectObs();
   void reproErrorAllCamGroup();
   void refineAllCameraGroupAndObjects();
+  void refineAllCameraGroupAndIntrinsic();
   void refineAllCameraGroupAndObjectsAndIntrinsic();
   void saveReprojection(const int cam_id);
   void saveReprojectionAllCam();

@@ -381,6 +381,148 @@ struct ReprojectionError_CameraGroupRef {
   int distortion_type;
 };
 
+// Refine camera group (3D object pose and relative camera pose)
+// 3D object refinement (board pose + object pose)
+struct ReprojectionError_CameraGroupRefAndIntrinsics {
+  ReprojectionError_CameraGroupRefAndIntrinsics(
+      double u, double v, double x, double y, double z, bool refine_camera,
+      bool refine_board, int distortion_type)
+      : u(u), v(v), x(x), y(y), z(z), refine_camera(refine_camera),
+        refine_board(refine_board), distortion_type(distortion_type) {}
+
+  template <typename T>
+  bool operator()(const T *const camera, const T *const object_pose,
+                  const T *const board_pose, const T *const cam_int,
+                  T *residuals) const {
+
+    // 0. prepare intrinsics
+    T focal_x = cam_int[0];
+    T focal_y = cam_int[1];
+    T u0 = cam_int[2];
+    T v0 = cam_int[3];
+    T k1 = cam_int[4];
+    T k2 = cam_int[5];
+    T k3 = cam_int[8];
+    T p1 = cam_int[6];
+    T p2 = cam_int[7];
+
+    // 1. Apply the board transformation in teh object
+    T point[3] = {T(x), T(y), T(z)};
+    if (refine_board != 0) {
+      T point_refine[3];
+      ceres::AngleAxisRotatePoint(board_pose, point, point_refine);
+      std::copy_n(point_refine, 3, point);
+      point[0] += board_pose[3];
+      point[1] += board_pose[4];
+      point[2] += board_pose[5];
+    }
+
+    // 2. apply transformation to the object (to expressed in the current
+    // camera)
+    T pobj[3];
+    ceres::AngleAxisRotatePoint(object_pose, point, pobj);
+    pobj[0] += object_pose[3];
+    pobj[1] += object_pose[4];
+    pobj[2] += object_pose[5];
+
+    // 3. Refine the camera if it is not the referential
+    if (refine_camera != 0) {
+      T pobj_refine[3];
+      ceres::AngleAxisRotatePoint(camera, pobj, pobj_refine);
+      std::copy_n(pobj_refine, 3, pobj);
+      pobj[0] += camera[3];
+      pobj[1] += camera[4];
+      pobj[2] += camera[5];
+    }
+
+    // Normalization on the camera plane
+    pobj[0] /= pobj[2];
+    pobj[1] /= pobj[2];
+
+    if (distortion_type == 0) // perspective brown
+    {
+      // apply distorsion
+      T r2 = pobj[0] * pobj[0] + pobj[1] * pobj[1];
+      T r4 = r2 * r2;
+      T r6 = r4 * r2;
+      T r_coeff = (T(1) + k1 * r2 + k2 * r4 + k3 * r6);
+      T xd = pobj[0] * r_coeff + T(2) * p1 * pobj[0] * pobj[1] +
+             p2 * (r2 + T(2) * pobj[0] * pobj[0]);
+      T yd = pobj[1] * r_coeff + p1 * (r2 + T(2) * (pobj[1] * pobj[1])) +
+             T(2) * p2 * pobj[0] * pobj[1];
+
+      // Project on the image plane
+      T up = T(focal_x) * xd + T(u0);
+      T vp = T(focal_y) * yd + T(v0);
+
+      // The error is the difference between the predicted and observed
+      // position.
+      residuals[0] = up - T(u);
+      residuals[1] = vp - T(v);
+    }
+
+    if (distortion_type == 1) // fisheye
+    {
+
+      // apply distorsion
+      // (source : https://www.programmersought.com/article/72251092167/)
+
+      T r2 = pobj[0] * pobj[0] + pobj[1] * pobj[1];
+      using std::atan;
+      using std::sqrt;
+      T r = sqrt(r2);
+      // auto r=sqrt<T>(r2);
+      T theta = atan(r);
+      // T theta = atan<T>(r);
+      T theta2 = theta * theta, theta3 = theta2 * theta,
+        theta4 = theta2 * theta2, theta5 = theta4 * theta;
+      T theta6 = theta3 * theta3, theta7 = theta6 * theta,
+        theta8 = theta4 * theta4, theta9 = theta8 * theta;
+      T theta_d = theta + k1 * theta3 + k2 * theta5 + p1 * theta7 + p2 * theta9;
+      T inv_r = r > T(1e-8) ? T(1.0) / r : T(1);
+      T cdist = r > T(1e-8) ? theta_d * inv_r : T(1);
+      //    T inv_r =  T(1)/r;
+      //    T cdist = theta_d * inv_r
+      T xd = pobj[0] * cdist;
+      T yd = pobj[1] * cdist;
+
+      // Project on the image plane
+      T up = T(focal_x) * xd + T(u0);
+      T vp = T(focal_y) * yd + T(v0);
+
+      // The error is the difference between the predicted and observed
+      // position.
+      residuals[0] = up - T(u);
+      residuals[1] = vp - T(v);
+    }
+    // T error = sqrt((residuals[0] + residuals[1])*(residuals[0] +
+    // residuals[1])); std::cout << "residual " <<  error <<  std::endl;
+    return true;
+  }
+
+  // Factory to hide the construction of the CostFunction object from
+  // the client code.
+  static ceres::CostFunction *Create(const double u, const double v,
+                                     const double x, const double y,
+                                     const double z, const bool refine_camera,
+                                     const bool refine_board,
+                                     const int distortion_type) {
+    return (new ceres::AutoDiffCostFunction<
+            ReprojectionError_CameraGroupRefAndIntrinsics, 2, 6, 6, 6,
+            9>(new ReprojectionError_CameraGroupRefAndIntrinsics(
+        u, v, x, y, z, refine_camera, refine_board, distortion_type)));
+  }
+
+  double u, v;
+  double x;
+  double y;
+  double z;
+  bool refine_camera;
+  bool refine_board;
+  int distortion_type;
+};
+
+
 // Refine camera group (3D object pose + relative camera pose + Board pose)
 struct ReprojectionError_CameraGroupAndObjectRef {
   ReprojectionError_CameraGroupAndObjectRef(

@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04 as prod
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
@@ -16,17 +16,19 @@ RUN apt-get install -y \
 
 #cmake
 RUN apt-get install -y cmake
+RUN apt-get update -y
 
 # suppress GTK warnings about accessibility because there's no dbus
 # (WARNING **: Couldn't connect to accessibility bus: Failed to connect to socket /tmp/dbus-dw0fOAy4vj: Connection refused)
 ENV NO_AT_BRIDGE 1
-ENV HOME /kaist
-WORKDIR /kaist
+ENV HOME /home/rvi
+WORKDIR /home/rvi
+
 
 #------------------------------	#
 #     INSTALL OPENCV 4		#
 #------------------------------	#
-RUN apt install -y libopencv-dev python3-opencv
+RUN apt install -y libopencv-dev 
 
 #------------------------------	#
 #     INSTALL Boost		#
@@ -45,6 +47,10 @@ RUN apt-get update && apt-get install -y \
 	libatlas-base-dev \
 	libeigen3-dev \
 	libsuitesparse-dev
+
+FROM prod as dev
+
+RUN apt install -y python3-opencv
 
 RUN apt-get install -y git
 RUN mkdir -p /Ceres

@@ -6,9 +6,9 @@
 
 #IncludeRegexTransform: 
 
-/home/solee/NVIDIA-Calib/src/Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -18,11 +18,11 @@ opencv2/opencv.hpp
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 Board.hpp
-/home/solee/NVIDIA-Calib/src/Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -32,31 +32,11 @@ opencv2/opencv.hpp
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/Calibration.cpp
-opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
-iostream
--
-opencv2/aruco/charuco.hpp
--
-opencv2/opencv.hpp
--
-random
--
-stdio.h
--
-Calibration.hpp
-/home/solee/NVIDIA-Calib/src/Calibration.hpp
-logger.h
-/home/solee/NVIDIA-Calib/src/logger.h
-point_refinement.h
-/home/solee/NVIDIA-Calib/src/point_refinement.h
-
-/home/solee/NVIDIA-Calib/src/Calibration.hpp
+/home/rvi/NVIDIA-Calib/src/Calibration.hpp
 boost/filesystem.hpp
-/home/solee/NVIDIA-Calib/src/boost/filesystem.hpp
+/home/rvi/NVIDIA-Calib/src/boost/filesystem.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 numeric
@@ -70,31 +50,31 @@ opencv2/opencv.hpp
 stdio.h
 -
 Board.hpp
-/home/solee/NVIDIA-Calib/src/Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
 BoardObs.hpp
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 Camera.hpp
-/home/solee/NVIDIA-Calib/src/Camera.hpp
+/home/rvi/NVIDIA-Calib/src/Camera.hpp
 CameraGroup.hpp
-/home/solee/NVIDIA-Calib/src/CameraGroup.hpp
+/home/rvi/NVIDIA-Calib/src/CameraGroup.hpp
 CameraGroupObs.hpp
-/home/solee/NVIDIA-Calib/src/CameraGroupObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraGroupObs.hpp
 CameraObs.hpp
-/home/solee/NVIDIA-Calib/src/CameraObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraObs.hpp
 Frame.hpp
-/home/solee/NVIDIA-Calib/src/Frame.hpp
+/home/rvi/NVIDIA-Calib/src/Frame.hpp
 Graph.hpp
-/home/solee/NVIDIA-Calib/src/Graph.hpp
+/home/rvi/NVIDIA-Calib/src/Graph.hpp
 Object3D.hpp
-/home/solee/NVIDIA-Calib/src/Object3D.hpp
+/home/rvi/NVIDIA-Calib/src/Object3D.hpp
 Object3DObs.hpp
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 geometrytools.hpp
-/home/solee/NVIDIA-Calib/src/geometrytools.hpp
+/home/rvi/NVIDIA-Calib/src/geometrytools.hpp
 
-/home/solee/NVIDIA-Calib/src/Camera.hpp
+/home/rvi/NVIDIA-Calib/src/Camera.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -104,17 +84,17 @@ opencv2/opencv.hpp
 stdio.h
 -
 Board.hpp
-/home/solee/NVIDIA-Calib/src/Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
 BoardObs.hpp
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 Frame.hpp
-/home/solee/NVIDIA-Calib/src/Frame.hpp
+/home/rvi/NVIDIA-Calib/src/Frame.hpp
 Object3DObs.hpp
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 
-/home/solee/NVIDIA-Calib/src/CameraGroup.hpp
+/home/rvi/NVIDIA-Calib/src/CameraGroup.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -124,23 +104,23 @@ opencv2/opencv.hpp
 stdio.h
 -
 Board.hpp
-/home/solee/NVIDIA-Calib/src/Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
 BoardObs.hpp
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 Camera.hpp
-/home/solee/NVIDIA-Calib/src/Camera.hpp
+/home/rvi/NVIDIA-Calib/src/Camera.hpp
 Frame.hpp
-/home/solee/NVIDIA-Calib/src/Frame.hpp
+/home/rvi/NVIDIA-Calib/src/Frame.hpp
 Object3DObs.hpp
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 
-/home/solee/NVIDIA-Calib/src/CameraGroupObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraGroupObs.hpp
 BoardObs.hpp
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 Object3DObs.hpp
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -150,13 +130,13 @@ opencv2/opencv.hpp
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/CameraObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraObs.hpp
 BoardObs.hpp
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 Object3DObs.hpp
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -166,9 +146,9 @@ opencv2/opencv.hpp
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/Frame.hpp
+/home/rvi/NVIDIA-Calib/src/Frame.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -178,15 +158,15 @@ opencv2/opencv.hpp
 stdio.h
 -
 BoardObs.hpp
-/home/solee/NVIDIA-Calib/src/BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
 CameraGroupObs.hpp
-/home/solee/NVIDIA-Calib/src/CameraGroupObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraGroupObs.hpp
 CameraObs.hpp
-/home/solee/NVIDIA-Calib/src/CameraObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraObs.hpp
 Object3DObs.hpp
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 
-/home/solee/NVIDIA-Calib/src/Graph.hpp
+/home/rvi/NVIDIA-Calib/src/Graph.hpp
 unordered_map
 -
 boost/graph/adjacency_list.hpp
@@ -198,9 +178,9 @@ boost/graph/dijkstra_shortest_paths.hpp
 boost/graph/graph_traits.hpp
 -
 
-/home/solee/NVIDIA-Calib/src/Object3D.hpp
+/home/rvi/NVIDIA-Calib/src/Object3D.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -210,13 +190,13 @@ opencv2/opencv.hpp
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/Object3DObs.hpp
+/home/rvi/NVIDIA-Calib/src/Object3DObs.hpp
 Board.hpp
-/home/solee/NVIDIA-Calib/src/Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
 Object3D.hpp
-/home/solee/NVIDIA-Calib/src/Object3D.hpp
+/home/rvi/NVIDIA-Calib/src/Object3D.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/aruco/charuco.hpp
@@ -226,9 +206,9 @@ opencv2/opencv.hpp
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/geometrytools.hpp
+/home/rvi/NVIDIA-Calib/src/geometrytools.hpp
 opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
+/home/rvi/NVIDIA-Calib/src/opencv2/core/core.hpp
 iostream
 -
 opencv2/opencv.hpp
@@ -238,21 +218,35 @@ random
 stdio.h
 -
 
-/home/solee/NVIDIA-Calib/src/logger.h
+/home/rvi/NVIDIA-Calib/src/logger.h
 boost/log/sources/global_logger_storage.hpp
 -
 boost/log/trivial.hpp
 -
 
-/home/solee/NVIDIA-Calib/src/point_refinement.h
-opencv2/core/core.hpp
-/home/solee/NVIDIA-Calib/src/opencv2/core/core.hpp
-iostream
+/home/rvi/NVIDIA-Calib/src/main_calibrate.cpp
+iomanip
+-
+opencv2/aruco/charuco.hpp
 -
 opencv2/opencv.hpp
 -
 stdio.h
 -
+Board.hpp
+/home/rvi/NVIDIA-Calib/src/Board.hpp
+BoardObs.hpp
+/home/rvi/NVIDIA-Calib/src/BoardObs.hpp
+Calibration.hpp
+/home/rvi/NVIDIA-Calib/src/Calibration.hpp
+Camera.hpp
+/home/rvi/NVIDIA-Calib/src/Camera.hpp
+CameraObs.hpp
+/home/rvi/NVIDIA-Calib/src/CameraObs.hpp
+Frame.hpp
+/home/rvi/NVIDIA-Calib/src/Frame.hpp
+logger.h
+/home/rvi/NVIDIA-Calib/src/logger.h
 
 /usr/include/opencv4/opencv2/aruco.hpp
 opencv2/core.hpp

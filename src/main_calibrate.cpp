@@ -12,9 +12,12 @@
 
 #include "logger.h"
 
+// Calibration Calib();
+
 void runCalibrationWorkflow(std::string config_path) {
   // Instantiate the calibration and initialize the parameters
   Calibration Calib(config_path);
+
   Calib.boardExtraction();
   LOG_INFO << "Board extraction done!";
 
@@ -22,6 +25,8 @@ void runCalibrationWorkflow(std::string config_path) {
   LOG_INFO << "Intrinsic calibration initiated";
   Calib.initIntrinsic();
   LOG_INFO << "Intrinsic Calibration done!";
+
+  // Calib.init3DObjectsload();
 
   // Calibrate 3D Objects
   LOG_INFO << "3D Object calibration initiated";
@@ -32,7 +37,6 @@ void runCalibrationWorkflow(std::string config_path) {
   LOG_INFO << "Camera group calibration initiated";
   Calib.calibrateCameraGroup();
   LOG_INFO << "Camera group calibration done!";
-
   // Merge objects again to deal with boards visible simultaneously from camera
   // groups
   Calib.merge3DObjects();
@@ -63,11 +67,17 @@ void runCalibrationWorkflow(std::string config_path) {
   // Calib.reproErrorAllCamGroup(); // this is just to check the reprojection
   // error before optimization Calib.refineAllCameraGroup(); // Refine Camera
   // only
+  Calib.refineAllCameraGroup();
+  if (Calib.fix_object_ == 0) {
   Calib.refineAllCameraGroupAndObjects();
   // Optimize everything including intrinsics
+  Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
   if (Calib.fix_intrinsic_ == 0) {
     Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
   }
+  }
+  //test
+  // Calib.refineAllCameraGroupAndIntrinsic();
 
   Calib.reproErrorAllCamGroup();
   LOG_INFO << "Final refinement done";
@@ -88,50 +98,52 @@ void runCalibrationWorkflow(std::string config_path) {
            << Calib.computeAvgReprojectionError() << std::endl;
 }
 
-void runCalibrationWorkflow2(std::string config_path) {
+void CamposeOnly(std::string config_path) {
   // Instantiate the calibration and initialize the parameters
-  Calibration Calib(config_path);
-  Calib.boardExtraction();
+  Calibration CamCalib(config_path);
+  // Calib() = Calib(config_path);
+  // CamCalib.object_3d_ = Calib.object_3d_;
+
+  CamCalib.boardExtraction();
   LOG_INFO << "Board extraction done!";
 
   // Intrinsic calibration of the cameras
   LOG_INFO << "Intrinsic calibration initiated";
-  Calib.initIntrinsic();
+  CamCalib.initIntrinsic();
   LOG_INFO << "Intrinsic Calibration done!";
 
   // Calibrate 3D Objects
   LOG_INFO << "3D Object calibration initiated";
-  Calib.calibrate3DObjects();
+  CamCalib.calibrate3DObjects();
   LOG_INFO << "3D Object calibration done!";
 
   // Calibrate camera groups
   LOG_INFO << "Camera group calibration initiated";
-  Calib.calibrateCameraGroup();
+  CamCalib.calibrateCameraGroup();
   LOG_INFO << "Camera group calibration done!";
-
   // Merge objects again to deal with boards visible simultaneously from camera
   // groups
-  Calib.merge3DObjects();
+  // Calib.merge3DObjects();
 
   // Calibrate Non-Overlapping cameras
   LOG_INFO << "Non-overlapping calibration initiated";
-  Calib.findPairObjectForNonOverlap();
-  Calib.findPoseNoOverlapAllCamGroup();
+  CamCalib.findPairObjectForNonOverlap();
+  CamCalib.findPoseNoOverlapAllCamGroup();
   LOG_INFO << "Non-overlapping calibration done!";
 
   // merge camera groups 1
   LOG_INFO << "Merge cameras and objets initiated";
-  Calib.initInterCamGroupGraph();
-  Calib.mergeCameraGroup();
-  Calib.mergeAllCameraGroupObs();
+  CamCalib.initInterCamGroupGraph();
+  CamCalib.mergeCameraGroup();
+  CamCalib.mergeAllCameraGroupObs();
   // Merge objects
-  Calib.merge3DObjects();
+  // Calib.merge3DObjects();
   // merge camera groups 2
-  Calib.initInterCamGroupGraph();
-  Calib.mergeCameraGroup();
-  Calib.mergeAllCameraGroupObs();
-  Calib.estimatePoseAllObjects();
-  Calib.computeAllObjPoseInCameraGroup();
+  CamCalib.initInterCamGroupGraph();
+  CamCalib.mergeCameraGroup();
+  CamCalib.mergeAllCameraGroupObs();
+  CamCalib.estimatePoseAllObjects();
+  CamCalib.computeAllObjPoseInCameraGroup();
   LOG_INFO << "Merge cameras and objets done!";
 
   // Final Optimization
@@ -139,37 +151,34 @@ void runCalibrationWorkflow2(std::string config_path) {
   // Calib.reproErrorAllCamGroup(); // this is just to check the reprojection
   // error before optimization Calib.refineAllCameraGroup(); // Refine Camera
   // only
-  Calib.refineAllCameraGroupAndObjects();
+  CamCalib.refineAllCameraGroupAndObjects();
   // Optimize everything including intrinsics
-  if (Calib.fix_intrinsic_ == 0) {
-    Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
+  // Calib.refineAllCameraGroupAndObjectsAndIntrinsic();
+  if (CamCalib.fix_intrinsic_ == 0) {
+    CamCalib.refineAllCameraGroupAndObjectsAndIntrinsic();
   }
 
-  Calib.reproErrorAllCamGroup();
+  CamCalib.reproErrorAllCamGroup();
   LOG_INFO << "Final refinement done";
 
   // Save images reprojection
-  if (Calib.save_detect_ == 1)
-    Calib.saveDetectionAllCam();
-  if (Calib.save_repro_ == 1)
-    Calib.saveReprojectionAllCam();
+  if (CamCalib.save_detect_ == 1)
+    CamCalib.saveDetectionAllCam();
+  if (CamCalib.save_repro_ == 1)
+    CamCalib.saveReprojectionAllCam();
 
   // Save camera parameters
   LOG_INFO << "Save parameters";
-  Calib.saveCamerasParams();
-
-  std::cout<< "Save camera params completed" << std::endl;
-  Calib.save3DObj();
-
-  std::cout<< "Save 3D Obj completed" << std::endl;
-  Calib.save3DObjPose();
-
-  std::cout<< "Save Pose comp" << std::endl;
-
-  Calib.saveReprojectionErrorToFile();
+  CamCalib.saveCamerasParams();
+  CamCalib.save3DObj();
+  CamCalib.save3DObjPose();
+  CamCalib.saveReprojectionErrorToFile();
   LOG_INFO << "mean reprojection error :: "
-           << Calib.computeAvgReprojectionError() << std::endl;
+           << CamCalib.computeAvgReprojectionError() << std::endl;
+  // std::shared_ptr<Calibration> Calibptr = Calib;
+  // return Calib;
 }
+
 
 int main(int argc, char *argv[]) {
   std::string config_path = argv[1];
@@ -179,9 +188,21 @@ int main(int argc, char *argv[]) {
     LOG_FATAL << "Config path '" << config_path << "' doesn't exist.";
     return -1;
   }
-
-
+  // std::shared_ptr<Calibration> Calib_();
+  // runCalibrationWorkflow(config_path);
+  // Calibration Calib_();
+  // Calib_() = &(runCalibrationWorkflow2(config_path)->Calib);
   runCalibrationWorkflow(config_path);
+
+  // CamposeOnly(config_path);
+  // runCalibrationWorkflow2(config_path).Calib.saveReprojectionErrorToFile();
+  // Calib->object_3d_;
+
+
+  // 추가
+  // std::string config_path2 = argv[2];
+  // runCalibrationWorkflow2(config_path2);
+
 
   config_path = argv[1];
 
