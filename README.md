@@ -1,114 +1,43 @@
 
-# MC-Calib
+# RVI-Calib
 
-Toolbox described in the paper ["MC-Calib: A generic and robust calibration toolbox for multi-camera systems"](https://www.sciencedirect.com/science/article/abs/pii/S1077314221001818) ([RG](https://www.researchgate.net/publication/357801965_MC-Calib_A_generic_and_robust_calibration_toolbox_for_multi-camera_systems) for open access, [preprint](https://github.com/rameau-fr/MC-Calib/issues/4)).
-
-![](docs/illustration.png)
+Main stream is borrowed from toolbox described in the paper ["MC-Calib: A generic and robust calibration toolbox for multi-camera systems"](https://www.sciencedirect.com/science/article/abs/pii/S1077314221001818) ([RG](https://www.researchgate.net/publication/357801965_MC-Calib_A_generic_and_robust_calibration_toolbox_for_multi-camera_systems) for open access, [preprint](https://github.com/rameau-fr/MC-Calib/issues/4)).
 
 # Installation
 
 Requirements: Ceres, Boost, OpenCV 4.5.x, c++14 
 
 There are several ways to get the environment ready. Choose any of them:
-
-1. The easiest way to get the environment is to pull it from the Docker Hub:
-
-   - [Install](https://docs.docker.com/engine/install/) docker.
-
-   - Pull the image:
-
-     ```bash
-     docker pull frameau/opencv-ceres
-     ```
-
-   - Run pulled image:
-   
-      ```bash
-      xhost +si:localuser:root
-      docker run \
-                  --runtime=nvidia \
-                  -ti --rm \
-                  --network host \
-                  --gpus all \
-                  --env="DISPLAY" \
-                  --env="QT_X11_NO_MITSHM=1" \
-                  --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-                  --volume="$HOME/.Xauthority:/home/$USER/.Xauthority:rw" \
-                  --volume="${PWD}:/home/$USER/MC-Calib" \
-                  --volume="PATH_TO_DATA:/home/$USER/MC-Calib/data" \
-                  frameau/opencv-ceres
-      #xhost -local:root  # resetting permissions
-      ```
-      
-2. It is also possible to build the docker environment manually:
+     
+1. Build the docker image:
    
    - [Install](https://docs.docker.com/engine/install/) docker
 
    - Create the image:
    
       ```bash
-      docker build - < Dockerfile -t SPECIFY_YOUR_NAME
+      cd /docker && bash build_image.sh
       ```
 
-3. Alternatively, every dependency can be installed independently without docker:
-
-   - [Install](https://docs.opencv.org/4.5.2/d7/d9f/tutorial_linux_install.html) OpenCV 4.5.x. Either instal system-wide with `sudo make install` or link to your `build` in `CmakeLists.txt`.
-
-   - Follow [installation guidelines](http://ceres-solver.org/installation.html#linux) to install Ceres.
-
-   - Install boost:
-
-      ```bash
-      sudo apt install libboost-all-dev
-      ```
-
-Then the following should do the job of compiling the code: 
+2. Then the following should do the job of compiling the code: 
 
    ```bash
-   mkdir build
-   cd build
-   cmake -DCMAKE_BUILD_TYPE=Release ..
+   mkdir build && \
+   cd build && \
+   cmake -DCMAKE_BUILD_TYPE=Release .. && \
    make -j10  
    ```
 
-## Generate documentation
-
-- Doxygen documentation is [available online](https://codedocs.xyz/rameau-fr/MC-Calib/).
-
-- It is also possible to generate Doxygen documentation locally:
-
-   - Install [Doxygen](https://www.doxygen.nl/download.html):
-
-      ```bash
-      sudo apt install flex
-      sudo apt install bison
-      git clone https://github.com/doxygen/doxygen.git
-      cd doxygen
-      mkdir build
-      cd build
-      cmake -G "Unix Makefiles" ..
-      make
-      make install # optional
-      ```
-   - Doxygen is already added to the `CmakeLists.txt` and is auto-generated if dependencies are satisfied. However, it is also possible to set it up manually:
-
-      ```bash
-      mkdir docs
-      cd docs
-      doxygen -g
-      #set INPUT = ../src in Doxyfile
-      doxygen
-      ```
       
 # Usage
 
 ## Calibration procedure
 
-1. **Generate your own Charuco boards**
+1. **Generate your own AprilTag boards**
 
-      If all your boards are similar (same number of squares in the x and y directions), you only need to specify the `number_x_square`, `number_y_square` and `number_board`. Then you can run the Charuco board generator:
+      If all your boards are similar (same number of squares in the x and y directions), you only need to specify the `number_x_square`, `number_y_square` and `number_board`. Then you can run the AprilTag board generator:
       ```bash
-      ./generate_charuco ../configs/calib_param.yml
+      ./generate_april ../configs/calib_param.yml
       ```
       If each board have a specific format (different number of squares), then you need to specify it in the fields 		`number_x_square_per_board` and `number_y_square_per_board`. For instance, if you want to use two boards of size [10x3] and [5x4] respectively, you have to set:
       ```
@@ -174,8 +103,8 @@ number_x_square: 5         # number of squares in the X direction
 number_y_square: 5         # number of squares the Y direction
 resolution_x: 500          # horizontal resolution in pixel
 resolution_y: 500          # vertical resolution in pixel
-length_square: 0.04        # parameters on the marker (can be kept as it is)
-length_marker: 0.03        # parameters on the marker (can be kept as it is)
+length_square: 0.04        # length of the marker (can be kept as it is)
+length_marker: 0.03        # gap between marker (can be kept as it is)
 number_board: 3            # number of boards used for calibration (for overlapping camera 1 is enough ...)
 boards_index: []           # leave it empty [] if the board index are ranging from zero to number_board; example of usage boards_index: [5,10 <-- only two board with index 5/10
 square_size: 0.192         # size of each square of the board in cm/mm/whatever you want
@@ -186,30 +115,38 @@ number_y_square_per_board: []
 square_size_per_board: []
 
 ######################################## Camera Parameters ###################################################
-distortion_model: 0         # 0:Brown (perspective) // 1: Kannala (fisheye)
-distortion_per_camera : []  # specify the model per camera, #leave "distortion_per_camera" empty [] if they all follow the same model (make sure that the vector is as long as cameras nb)
-number_camera: 2            # number of cameras in the rig to calibrate
-refine_corner: 1            # activate or deactivate the corner refinement
-min_perc_pts: 0.5           # min percentage of points visible to assume a good detection
+distortion_model: 0              #0:Brown (perspective) // 1: Kannala (fisheye)
+distortion_per_camera : []       #specify the model per camera, 
+                                 #leave "distortion_per_camera" empty [] if they all follow the same model (make sure that the vector is as long as cameras nb)
+number_camera: 8                 # number of cameras in the rig to calibrate
+refine_corner: 0                 # activate or deactivate the corner refinement
+min_perc_pts: 0.5                # min percentage of points visible to assume a good detection
 
-cam_params_path: "None"    # file with cameras intrinsics to initialize the intrinsic, write "None" if no initialization available 
+
+cam_params_path: "../../data/221011_42dot_caldata/niro_2k_data1/calibrated_cameras_data2.yml"  # file with cameras intrinsics to initialize the intrinsic, write "None" if no initialization available 
+fix_intrinsic: 1                 # if 1 then the intrinsic parameters will not be estimated nor refined (initial value needed)
+
+######################################## Object ###################################################
+object_data: ""                  # "../../data/221011_42dot_caldata/niro_2k_multi/calibrated_objects_data.yml"   # If you want to use pre-calibrated objectfile.
+fix_object: 0                    # If 1 then the object pose will not be estimated nor refined (initial value needed).
 
 ######################################## Images Parameters ###################################################
-root_path: "../data/Synthetic_calibration_image/Scenario_1/Images/"
+root_path: "../../data/221011_42dot_caldata/niro_2k_data1/" #"../../Images_Sim1Cam3Board/" # "../../Images_NonOver3/"  "../../Images_Cube/" "../../Images_Plan/" "../../Images_NonOver6Cam/"
+#root_path: "../../Data/bus/"
 cam_prefix: "Cam_"
 
-######################################## Optimization Parameters #############################################
-ransac_threshold: 10        # RANSAC threshold in pixel (keep it high just to remove strong outliers)
-number_iterations: 1000     # Max number of iterations for the non linear refinement
+######################################## Optimization Parameters ###################################################
+ransac_threshold: 10 #RANSAC threshold in pixel (keep it high just to remove strong outliers)
+number_iterations: 1000 #Max number of iterations for the non linear refinement
 
 ######################################## Hand-eye method #############################################
 he_approach: 0 #0: bootstrapped he technique, 1: traditional he
 
 ######################################## Output Parameters ###################################################
-save_path: "experiments/Synthetic_calibration_image/Scenario_1/"
+save_path: "../../data/calibrated_Niro2k_1/"
 save_detection: 1
 save_reprojection: 1
-camera_params_file_name: "" # "name.yml"
+camera_params_file_name: ""
 ```
 
 ## Output explanation
@@ -280,19 +217,18 @@ The calibration toolbox automatically output four ```*.yml``` files. To illustra
    ```bash
    %YAML:1.0
    ---
-   object_0: #object index (if all boards have been seen, a single object should exist)
-      points: !!opencv-matrix #3xn 3D structure of the object
-         rows: 3
-         cols: 16
-         dt: f
-         data: [ 0., 9.14999962e+00, 1.82999992e+01, 2.74499989e+01, 0.,
-            9.14999962e+00, 1.82999992e+01, 2.74499989e+01, 0.,
-            9.14999962e+00, 1.82999992e+01, 2.74499989e+01, 0.,
-            9.14999962e+00, 1.82999992e+01, 2.74499989e+01, 0., 0., 0., 0.,
-            9.14999962e+00, 9.14999962e+00, 9.14999962e+00, 9.14999962e+00,
-            1.82999992e+01, 1.82999992e+01, 1.82999992e+01, 1.82999992e+01,
-            2.74499989e+01, 2.74499989e+01, 2.74499989e+01, 2.74499989e+01,
-            0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0. ]
+   object_0:  #object index (if all boards have been seen, a single object should exist)
+      nb_boards: 20 #number of boards contained in the current object
+      nb_pts: 1952 #number of 3d points contained in the current object
+      ref_board_id_: 0 #the reference board index of the current object
+      board_0: #the board index of the current board contained in this object.
+         board_id: 0 
+         inner_pose: !!opencv-matrix #the inner board pose of the current board.
+            rows: 4
+            cols: 4
+            dt: d
+            data: [ 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0.,
+               0., 1. ]
    ```
 
 * **Object's poses:** `calibrated_objects_pose_data.yml`
@@ -316,7 +252,6 @@ The synthetic and real datasets acquired for this paper are freely available via
 Please follow `docs/contributing.rst` when introducing changes. 
 
 # Citation
-
 If you use this project in your research, please cite:
 ```
 @article{RAMEAU2022103353,
@@ -331,5 +266,8 @@ author = {Francois Rameau and Jinsun Park and Oleksandr Bailo and In So Kweon},
 keywords = {Camera calibration, Multi-camera system},
 }
 ```
+Thank you for your wonderful research and support.
+
+
 
 
